@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero__bg"></div>
+    <div class="container hero__content">
+        <span class="hero__label">Итальянская кухня</span>
+        <h1 class="hero__title">Настоящий вкус<br><span class="text-accent">Италии</span></h1>
+        <p class="hero__desc">Аутентичные рецепты, свежие ингредиенты и атмосфера средиземноморского гостеприимства</p>
+        <div class="hero__buttons">
+            <a href="#menu" class="btn btn--primary">Смотреть меню</a>
+            <a href="#" class="btn btn--outline">Забронировать стол</a>
+        </div>
+    </div>
+</section>
+
+<!-- Menu Section -->
+<section id="menu" class="section menu-section">
+    <div class="container">
+        <div class="section__header">
+            <span class="section__label">Наше меню</span>
+            <h2 class="section__title">Популярные <span class="text-accent">блюда</span></h2>
+        </div>
+
+        <div class="dishes-grid">
+            {% for dish in dishes %}
+            <article class="dish-card">
+                <div class="dish-card__img" style="background-image: url('{{ dish.image.url|default:"https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=600&q=80" }}');"></div>
+                <div class="dish-card__body">
+                    <span class="dish-card__cat">{{ dish.category.name|default:"Итальянская кухня" }}</span>
+                    <h3 class="dish-card__name">{{ dish.name }}</h3>
+                    <p class="dish-card__desc">{{ dish.description|truncatewords:15 }}</p>
+                    <div class="dish-card__price">{{ dish.price }} ₽</div>
+                </div>
+            </article>
+            {% empty %}
+            <p class="text-muted">Меню пока пусто. Добавьте блюда через админку.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

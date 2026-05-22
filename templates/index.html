@@ -9,34 +9,90 @@
         <h1 class="hero__title">Настоящий вкус<br><span class="text-accent">Италии</span></h1>
         <p class="hero__desc">Аутентичные рецепты, свежие ингредиенты и атмосфера средиземноморского гостеприимства</p>
         <div class="hero__buttons">
-            <a href="#menu" class="btn btn--primary">Смотреть меню</a>
-            <a href="#" class="btn btn--outline">Забронировать стол</a>
+            <a href="{% url 'core:menu' %}" class="btn btn--primary">Смотреть меню</a>
+            <a href="{% url 'core:reservation' %}" class="btn btn--outline">Забронировать стол</a>
         </div>
     </div>
 </section>
 
-<!-- Menu Section -->
-<section id="menu" class="section menu-section">
+<!-- About Section -->
+<section id="about" class="section about-section">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about__content">
+                <span class="section__label">О ресторане</span>
+                <h2 class="section__title">Традиции <span class="text-accent">итальянской кухни</span></h2>
+                <p class="about__text">
+                    IO SONO — это не просто ресторан, это место, где оживают традиции настоящей итальянской кухни. 
+                    Наши шеф-повара привезли рецепты прямо из Италии, чтобы вы могли насладиться аутентичным вкусом 
+                    средиземноморья.
+                </p>
+                <p class="about__text">
+                    Мы используем только свежие ингредиенты от проверенных поставщиков и готовим с любовью 
+                    к каждому блюду.
+                </p>
+                <a href="{% url 'core:menu' %}" class="btn btn--outline">Наше меню</a>
+            </div>
+            <div class="about__features">
+                <div class="feature-card">
+                    <div class="feature-card__icon">🍝</div>
+                    <h3>Аутентичные рецепты</h3>
+                    <p>Традиционные итальянские блюда</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card__icon">🌿</div>
+                    <h3>Свежие продукты</h3>
+                    <p>Только качественные ингредиенты</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card__icon">🍷</div>
+                    <h3>Уютная атмосфера</h3>
+                    <p>Интерьер в итальянском стиле</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Menu Preview (без фото) -->
+<section id="menu" class="section menu-preview">
     <div class="container">
         <div class="section__header">
             <span class="section__label">Наше меню</span>
             <h2 class="section__title">Популярные <span class="text-accent">блюда</span></h2>
         </div>
 
-        <div class="dishes-grid">
-            {% for dish in dishes %}
-            <article class="dish-card">
-                <div class="dish-card__img" style="background-image: url('{{ dish.image.url|default:"https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=600&q=80" }}');"></div>
-                <div class="dish-card__body">
-                    <span class="dish-card__cat">{{ dish.category.name|default:"Итальянская кухня" }}</span>
-                    <h3 class="dish-card__name">{{ dish.name }}</h3>
-                    <p class="dish-card__desc">{{ dish.description|truncatewords:15 }}</p>
-                    <div class="dish-card__price">{{ dish.price }} ₽</div>
+        <div class="menu-preview__grid">
+            {% for dish in dishes|slice:":4" %}
+            <div class="menu-preview__item">
+                <div class="menu-preview__header">
+                    <h3>{{ dish.name }}</h3>
+                    <span class="menu-preview__price">{{ dish.price }} ₽</span>
                 </div>
-            </article>
+                <p class="menu-preview__desc">{{ dish.description|truncatewords:12 }}</p>
+                <span class="menu-preview__category">{{ dish.category.name }}</span>
+            </div>
             {% empty %}
-            <p class="text-muted">Меню пока пусто. Добавьте блюда через админку.</p>
+            <p class="text-muted">Меню пока пусто. Загляните позже!</p>
             {% endfor %}
+        </div>
+
+        <div class="text-center" style="margin-top: 3rem;">
+            <a href="{% url 'core:menu' %}" class="btn btn--primary">Смотреть всё меню</a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="section cta-section">
+    <div class="container">
+        <div class="cta-box">
+            <h2 class="cta-box__title">Забронировать стол</h2>
+            <p class="cta-box__text">Позвоните нам или заполните форму бронирования</p>
+            <div class="cta-box__buttons">
+                <a href="tel:+79991234567" class="btn btn--primary">+7 (999) 123-45-67</a>
+                <a href="{% url 'core:reservation' %}" class="btn btn--outline">Онлайн бронь</a>
+            </div>
         </div>
     </div>
 </section>

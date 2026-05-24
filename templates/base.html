@@ -32,12 +32,16 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="footer">
-        <div class="container footer__inner">
-            <p>© 2026 IO SONO. Дипломный проект.</p>
-            <p class="footer__note">Разработано на Django + Vanilla CSS/JS</p>
+        <!-- Копирайт -->
+        <div class="copyright">
+            <div class="container">
+                <p>© Все права защищены 2026 IO SONO</p>
+            </div>
         </div>
-    </footer>
+
+            <script src="{% static 'js/main.js' %}"></script>
+        </body>
+        </html>
 
     <script src="{% static 'js/main.js' %}"></script>
 </body>

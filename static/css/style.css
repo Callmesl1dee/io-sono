@@ -7,6 +7,7 @@ body {
     color: #e5e5e5;
     line-height: 1.6;
     overflow-x: hidden;
+    padding-top: 0; /* Убрал отступ под фиксированный хедер */
 }
 img { max-width: 100%; display: block; }
 a { text-decoration: none; color: inherit; }
@@ -35,7 +36,15 @@ a { text-decoration: none; color: inherit; }
 .text-muted { color: var(--clr-muted); text-align: center; }
 
 /* === HEADER === */
-.header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1.25rem 0; background: rgba(10,10,10,0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+.header {
+    position: relative; /* ← ИЗМЕНЕНО: был fixed, теперь в потоке документа */
+    z-index: 100;
+    padding: 1.25rem 0;
+    background: rgba(10,10,10,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: var(--transition);
+}
 .header__inner { display: flex; align-items: center; justify-content: space-between; }
 .logo { font-family: var(--font-serif); font-size: 1.75rem; font-weight: 700; }
 .logo__accent { color: var(--clr-primary); }
@@ -45,7 +54,15 @@ a { text-decoration: none; color: inherit; }
 .nav__link--admin { color: var(--clr-muted); font-size: 0.85rem; opacity: 0.7; }
 
 /* === HERO === */
-.hero { position: relative; height: 100vh; display: flex; align-items: center; overflow: hidden; }
+.hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    margin-top: 0; /* ← Убрал компенсацию */
+    padding-top: 0;
+}
 .hero__bg { position: absolute; inset: 0; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); z-index: 1; }
 .hero__bg::after { content: ''; position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80') center/cover no-repeat; opacity: 0.3; mix-blend-mode: overlay; }
 .hero__content { position: relative; z-index: 2; max-width: 700px; }
@@ -57,9 +74,9 @@ a { text-decoration: none; color: inherit; }
 /* === BUTTONS === */
 .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.9rem 2rem; border-radius: 50px; font-weight: 600; transition: var(--transition); cursor: pointer; border: none; font-size: 1rem; }
 .btn--primary { background: var(--clr-primary); color: #fff; }
-.btn--primary:hover { background: var(--clr-primary-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(21, 128, 61, 0.3); }
+.btn--primary:hover { background: var(--clr-primary-hover); box-shadow: 0 8px 20px rgba(21, 128, 61, 0.3); }
 .btn--outline { border: 2px solid var(--clr-accent); color: var(--clr-accent); background: transparent; }
-.btn--outline:hover { background: var(--clr-accent); color: #000; transform: translateY(-2px); }
+.btn--outline:hover { background: var(--clr-accent); color: #000; }
 
 /* === MENU SECTION === */
 .section__header { text-align: center; margin-bottom: 3rem; }
@@ -68,7 +85,7 @@ a { text-decoration: none; color: inherit; }
 
 .dishes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
 .dish-card { background: var(--clr-surface); border-radius: var(--radius); overflow: hidden; transition: var(--transition); border: 1px solid rgba(255,255,255,0.05); }
-.dish-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); border-color: rgba(21, 128, 61, 0.3); }
+.dish-card:hover { border-color: rgba(21, 128, 61, 0.4); box-shadow: 0 0 25px rgba(21, 128, 61, 0.15); }
 .dish-card__img { height: 200px; background-size: cover; background-position: center; background-color: #222; }
 .dish-card__body { padding: 1.5rem; }
 .dish-card__cat { display: block; color: var(--clr-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; margin-bottom: 0.5rem; }
@@ -83,7 +100,7 @@ a { text-decoration: none; color: inherit; }
 
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
-    .nav { display: none; } /* Позже добавим бургер-меню */
+    .nav { display: none; }
     .hero__buttons { flex-direction: column; width: 100%; }
     .btn { width: 100%; }
 }
@@ -120,7 +137,7 @@ a { text-decoration: none; color: inherit; }
 }
 .menu-preview__item:hover {
     border-color: var(--clr-primary);
-    transform: translateX(5px);
+    box-shadow: 0 0 20px rgba(21, 128, 61, 0.1);
 }
 .menu-preview__header {
     display: flex;
@@ -176,7 +193,7 @@ a { text-decoration: none; color: inherit; }
     justify-content: center;
     font-size: 3rem;
 }
-.dish-card__img--placeholder::after { content: '🍝'; }
+.dish-card__img--placeholder::after { content: ''; }
 
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
@@ -210,8 +227,8 @@ a { text-decoration: none; color: inherit; }
     transition: var(--transition);
 }
 .bar-item:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow);
+    border-color: rgba(21, 128, 61, 0.4);
+    box-shadow: 0 0 25px rgba(21, 128, 61, 0.15);
 }
 .bar-item--featured {
     border: 2px solid var(--clr-accent);
@@ -299,12 +316,16 @@ a { text-decoration: none; color: inherit; }
     transition: var(--transition);
 }
 .kids-item:hover {
-    transform: translateY(-5px) scale(1.02);
     border-color: var(--clr-primary);
+    box-shadow: 0 0 25px rgba(21, 128, 61, 0.15);
 }
 .kids-item--popular {
     border-color: var(--clr-accent);
     box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
+}
+
+.kids-item--popular:hover {
+    box-shadow: 0 0 40px rgba(245, 158, 11, 0.3);
 }
 
 .kids-item__img {
@@ -353,6 +374,7 @@ a { text-decoration: none; color: inherit; }
         grid-template-columns: 1fr;
     }
 }
+
 /* === УЛУЧШЕННОЕ ДЕТСКОЕ МЕНЮ === */
 .kids-menu .menu-category__title {
     font-size: 1.6rem;
@@ -364,7 +386,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .kids-menu .menu-category__title::before {
-    content: '🎨';
+    content: '';
     font-size: 1.8rem;
 }
 
@@ -380,8 +402,7 @@ a { text-decoration: none; color: inherit; }
 
 .kids-item:hover {
     border-color: var(--clr-primary);
-    transform: translateY(-8px);
-    box-shadow: 0 15px 40px rgba(21, 128, 61, 0.25);
+    box-shadow: 0 0 30px rgba(21, 128, 61, 0.2);
 }
 
 .kids-item--popular {
@@ -391,8 +412,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .kids-item--popular:hover {
-    transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 20px 50px rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 40px rgba(245, 158, 11, 0.3);
 }
 
 .kids-item__name {
@@ -453,8 +473,8 @@ a { text-decoration: none; color: inherit; }
 
 .reservation-wrapper {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 4rem;
+    grid-template-columns: 1.8fr 1fr;
+    gap: 3rem;
     align-items: start;
 }
 
@@ -534,7 +554,6 @@ a { text-decoration: none; color: inherit; }
 
 .guest-option__number:hover {
     border-color: var(--clr-primary);
-    transform: scale(1.05);
 }
 
 .btn--large {
@@ -571,32 +590,49 @@ a { text-decoration: none; color: inherit; }
 
 .reservation-info {
     background: var(--clr-surface);
-    padding: 2rem;
+    padding: 2.5rem;
     border-radius: var(--radius);
     border: 1px solid rgba(255,255,255,0.05);
     position: sticky;
     top: 100px;
-}
-
-.reservation-info h3 {
-    font-family: var(--font-serif);
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    color: var(--clr-text);
+    min-width: 320px;
 }
 
 .reservation-phone {
     display: block;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: var(--clr-accent);
     margin-bottom: 1rem;
     transition: var(--transition);
+    word-break: keep-all;
+    white-space: nowrap;
 }
 
 .reservation-phone:hover {
     color: var(--clr-primary);
-    transform: scale(1.05);
+}
+
+/* Адаптация для средних экранов */
+@media (max-width: 1100px) {
+    .reservation-wrapper {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .reservation-info {
+        position: static;
+        min-width: auto;
+    }
+}
+
+/* Для очень широких экранов — ещё лучше */
+@media (min-width: 1400px) {
+    .reservation-wrapper {
+        grid-template-columns: 2fr 0.9fr;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
 }
 
 .reservation-hours {
@@ -611,6 +647,19 @@ a { text-decoration: none; color: inherit; }
     line-height: 1.6;
     padding-top: 1.5rem;
     border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.copyright {
+    background: transparent;
+    padding: 1.5rem 0;
+    text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.copyright p {
+    color: var(--clr-muted);
+    font-size: 0.9rem;
+    margin: 0;
 }
 
 /* Responsive для формы */

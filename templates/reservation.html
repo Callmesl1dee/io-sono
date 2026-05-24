@@ -54,13 +54,30 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="date" class="form-label">Дата *</label>
-                            <input 
-                                type="date" 
-                                id="date" 
-                                name="date" 
-                                class="form-input" 
-                                required
-                            >
+                            <details class="date-picker" data-date-picker>
+                                <summary class="date-picker__trigger">
+                                    <span class="date-picker__value is-placeholder">Выберите дату</span>
+                                    <span class="date-picker__icon" aria-hidden="true">⌄</span>
+                                </summary>
+                                <input type="hidden" id="date" name="date" required>
+                                <div class="date-picker__panel">
+                                    <div class="date-picker__header">
+                                        <button type="button" class="date-picker__nav" data-date-prev aria-label="Предыдущий месяц">‹</button>
+                                        <div class="date-picker__month" data-date-month>Месяц</div>
+                                        <button type="button" class="date-picker__nav" data-date-next aria-label="Следующий месяц">›</button>
+                                    </div>
+                                    <div class="date-picker__weekdays">
+                                        <span>Пн</span>
+                                        <span>Вт</span>
+                                        <span>Ср</span>
+                                        <span>Чт</span>
+                                        <span>Пт</span>
+                                        <span>Сб</span>
+                                        <span>Вс</span>
+                                    </div>
+                                    <div class="date-picker__grid" data-date-grid></div>
+                                </div>
+                            </details>
                         </div>
 
                         <div class="form-group">

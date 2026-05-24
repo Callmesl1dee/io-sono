@@ -513,6 +513,111 @@ a { text-decoration: none; color: inherit; }
     box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.1);
 }
 
+.time-picker {
+    position: relative;
+}
+
+.time-picker > summary {
+    list-style: none;
+}
+
+.time-picker > summary::-webkit-details-marker {
+    display: none;
+}
+
+.time-picker__trigger {
+    width: 100%;
+    min-height: 58px;
+    padding: 0.9rem 1.2rem;
+    background: var(--clr-bg);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: var(--clr-text);
+    font-size: 1rem;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    cursor: pointer;
+    text-align: left;
+}
+
+.time-picker__trigger:hover {
+    border-color: rgba(255,255,255,0.2);
+}
+
+.time-picker__trigger:focus,
+.time-picker__trigger:focus-visible {
+    outline: none;
+    border-color: var(--clr-primary);
+    box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.1);
+}
+
+.time-picker__value {
+    color: var(--clr-text);
+}
+
+.time-picker__value.is-placeholder {
+    color: var(--clr-muted);
+}
+
+.time-picker__icon {
+    color: var(--clr-muted);
+    font-size: 1rem;
+    transition: transform var(--transition);
+}
+
+.time-picker[open] .time-picker__icon {
+    transform: rotate(180deg);
+}
+
+.time-picker__dropdown {
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    background: #101010;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+    backdrop-filter: blur(8px);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.time-picker__radio {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.time-picker__option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    appearance: none;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    color: var(--clr-text);
+    border-radius: 10px;
+    padding: 0.85rem 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.time-picker__option:hover {
+    border-color: var(--clr-primary);
+    background: rgba(21, 128, 61, 0.12);
+}
+
+.time-picker__radio:checked + .time-picker__option {
+    background: var(--clr-primary);
+    border-color: var(--clr-primary);
+    color: #fff;
+}
+
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;

@@ -54,27 +54,62 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="date" class="form-label">Дата *</label>
-                            <input 
-                                type="date" 
-                                id="date" 
-                                name="date" 
-                                class="form-input" 
-                                required
-                            >
+                            <details class="date-picker" data-date-picker>
+                                <summary class="date-picker__trigger">
+                                    <span class="date-picker__value is-placeholder">Выберите дату</span>
+                                    <span class="date-picker__icon" aria-hidden="true">⌄</span>
+                                </summary>
+                                <input type="hidden" id="date" name="date" required>
+                                <div class="date-picker__panel">
+                                    <div class="date-picker__header">
+                                        <button type="button" class="date-picker__nav" data-date-prev aria-label="Предыдущий месяц">‹</button>
+                                        <div class="date-picker__month" data-date-month>Месяц</div>
+                                        <button type="button" class="date-picker__nav" data-date-next aria-label="Следующий месяц">›</button>
+                                    </div>
+                                    <div class="date-picker__weekdays">
+                                        <span>Пн</span>
+                                        <span>Вт</span>
+                                        <span>Ср</span>
+                                        <span>Чт</span>
+                                        <span>Пт</span>
+                                        <span>Сб</span>
+                                        <span>Вс</span>
+                                    </div>
+                                    <div class="date-picker__grid" data-date-grid></div>
+                                </div>
+                            </details>
                         </div>
 
                         <div class="form-group">
-                            <label for="time" class="form-label">Время *</label>
-                            <select id="time" name="time" class="form-input" required>
-                                <option value="">Выберите время</option>
-                                <option value="12:00">12:00</option>
-                                <option value="13:00">13:00</option>
-                                <option value="14:00">14:00</option>
-                                <option value="18:00">18:00</option>
-                                <option value="19:00">19:00</option>
-                                <option value="20:00">20:00</option>
-                                <option value="21:00">21:00</option>
-                            </select>
+                            <label class="form-label">Время *</label>
+                            <details class="time-picker">
+                                <summary class="time-picker__trigger">
+                                    <span class="time-picker__value">Выберите время</span>
+                                    <span class="time-picker__icon" aria-hidden="true">⌄</span>
+                                </summary>
+                                <div class="time-picker__dropdown" role="listbox" aria-label="Выберите время">
+                                    <input class="time-picker__radio" type="radio" id="time-12" name="time" value="12:00" required>
+                                    <label class="time-picker__option" for="time-12">12:00</label>
+
+                                    <input class="time-picker__radio" type="radio" id="time-13" name="time" value="13:00">
+                                    <label class="time-picker__option" for="time-13">13:00</label>
+
+                                    <input class="time-picker__radio" type="radio" id="time-14" name="time" value="14:00">
+                                    <label class="time-picker__option" for="time-14">14:00</label>
+
+                                    <input class="time-picker__radio" type="radio" id="time-18" name="time" value="18:00">
+                                    <label class="time-picker__option" for="time-18">18:00</label>
+
+                                    <input class="time-picker__radio" type="radio" id="time-19" name="time" value="19:00">
+                                    <label class="time-picker__option" for="time-19">19:00</label>
+
+                                    <input class="time-picker__radio" type="radio" id="time-20" name="time" value="20:00">
+                                    <label class="time-picker__option" for="time-20">20:00</label>
+
+                                    <input class="time-picker__radio" type="radio" id="time-21" name="time" value="21:00">
+                                    <label class="time-picker__option" for="time-21">21:00</label>
+                                </div>
+                            </details>
                         </div>
                     </div>
 

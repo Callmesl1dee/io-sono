@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Мой кабинет | IO SONO{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div>
+            <h1 class="profile-name">Мой кабинет</h1>
+            <p class="profile-greeting">Привет, <strong>{{ user.username }}</strong>!</p>
+        </div>
+        <!-- Кнопку выхода убрали отсюда - теперь она в выпадающем меню -->
+    </div>
+
+    <div class="reservations-list">
+        <h2 class="section-title">История бронирований</h2>
+        
+        {% if reservations %}
+            <div class="reservations-table">
+                <div class="reservation-row header-row">
+                    <span>Дата</span>
+                    <span>Время</span>
+                    <span>Гости</span>
+                    <span>Статус</span>
+                    <span>Создано</span>
+                </div>
+
+                {% for res in reservations %}
+                <div class="reservation-row">
+                    <span class="res-date">{{ res.date|date:"d.m.Y" }}</span>
+                    <span>{{ res.time }}</span>
+                    <span>{{ res.guests }} чел.</span>
+                    
+                    <span class="status-badge status-{{ res.status }}">
+                        {{ res.get_status_display }}
+                    </span>
+                    
+                    <span class="text-muted" style="font-size: 0.85rem;">{{ res.created_at|date:"d.m.Y H:i" }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted" style="text-align: left; padding: 2rem 0;">Вы пока ничего не бронировали.</p>
+            <a href="{% url 'core:reservation' %}" class="btn btn--primary">Забронировать стол</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

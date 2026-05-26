@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Регистрация | IO SONO{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <h2 class="auth-title">Создать аккаунт</h2>
+        <form method="post" action="{% url 'core:register' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">Имя пользователя</label>
+                <input type="text" name="username" class="form-input" required placeholder="your_name">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-input" required placeholder="mail@example.com">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Пароль</label>
+                <input type="password" name="password" class="form-input" required>
+            </div>
+            
+            <button type="submit" class="btn btn--primary btn--full">Зарегистрироваться</button>
+        </form>
+        
+        <p class="auth-footer">Уже есть аккаунт? <a href="{% url 'core:login' %}" class="text-accent">Войти</a></p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход | IO SONO{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <h2 class="auth-title">Вход в кабинет</h2>
+        
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert--{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" action="{% url 'core:login' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">Имя пользователя</label>
+                <input type="text" name="username" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Пароль</label>
+                <input type="password" name="password" class="form-input" required>
+            </div>
+            
+            <button type="submit" class="btn btn--primary btn--full">Войти</button>
+        </form>
+        
+        <p class="auth-footer">Нет аккаунта? <a href="{% url 'core:register' %}" class="text-accent">Создать</a></p>
+    </div>
+</div>
+{% endblock %}

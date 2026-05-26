@@ -18,12 +18,38 @@
     <header class="header">
         <div class="container header__inner">
             <a href="/" class="logo">IO <span class="logo__accent">SONO</span></a>
+            
             <nav class="nav">
-                 <a href="{% url 'core:home' %}" class="nav__link">Главная</a>
-                 <a href="{% url 'core:menu' %}" class="nav__link">Меню</a>
-                 <a href="{% url 'core:bar_menu' %}" class="nav__link">Бар</a>
-                 <a href="{% url 'core:kids_menu' %}" class="nav__link">Детское меню</a>
-                 <a href="{% url 'core:reservation' %}" class="nav__link">Бронь</a>
+                <a href="{% url 'core:home' %}" class="nav__link">Главная</a>
+                <a href="{% url 'core:menu' %}" class="nav__link">Меню</a>
+                <a href="{% url 'core:bar_menu' %}" class="nav__link">Бар</a>
+                <a href="{% url 'core:kids_menu' %}" class="nav__link">Детское</a>
+                <a href="{% url 'core:reservation' %}" class="nav__link">Бронь</a>
+
+                <!-- === ВЫПАДАЮЩЕЕ МЕНЮ ПОЛЬЗОВАТЕЛЯ === -->
+                {% if user.is_authenticated %}
+                <div class="user-menu">
+                    <button class="user-menu__trigger" type="button">
+                        <span class="user-menu__name">👤 {{ user.username }}</span>
+                        <span class="user-menu__arrow">▼</span>
+                    </button>
+                    
+                    <div class="user-menu__dropdown">
+                        <a href="{% url 'core:profile' %}" class="user-menu__item">
+                            <span>📋</span> Мои брони
+                        </a>
+                        <a href="{% url 'core:loyalty' %}" class="user-menu__item">
+                            <span>🎁</span> Бонусы
+                        </a>
+                        <div class="user-menu__divider"></div>
+                        <a href="{% url 'core:logout' %}" class="user-menu__item user-menu__item--danger">
+                            <span>🚪</span> Выйти
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                    <a href="{% url 'core:login' %}" class="nav__link nav__link--admin">Войти</a>
+                {% endif %}
             </nav>
         </div>
     </header>
@@ -32,16 +58,12 @@
         {% block content %}{% endblock %}
     </main>
 
-        <!-- Копирайт -->
-        <div class="copyright">
-            <div class="container">
-                <p>© Все права защищены 2026 IO SONO</p>
-            </div>
+    <!-- Копирайт -->
+    <div class="copyright">
+        <div class="container">
+            <p>© Все права защищены 2026 IO SONO</p>
         </div>
-
-            <script src="{% static 'js/main.js' %}"></script>
-        </body>
-        </html>
+    </div>
 
     <script src="{% static 'js/main.js' %}"></script>
 </body>

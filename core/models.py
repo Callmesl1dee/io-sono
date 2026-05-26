@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # 1. Модель категорий (Паста, Пицца и т.д.)
 class Category(models.Model):
@@ -35,13 +36,28 @@ class MenuItem(models.Model):
         return f"{self.name} ({self.price} ₽)"
 
 # 3. Модель бронирования столов
+# В начало файла добавь импорт
+from django.contrib.auth.models import User
+
 class Reservation(models.Model):
+    # ... старые поля ...
     name = models.CharField('Ваше имя', max_length=100)
     phone = models.CharField('Телефон', max_length=20)
-    date = models.DateField('Дата бронирования')
+    date = models.DateField('Дата')
     time = models.TimeField('Время')
-    guests = models.PositiveIntegerField('Количество гостей', default=2)
+    guests = models.PositiveIntegerField('Гостей', default=2)
     created_at = models.DateTimeField('Создано', auto_now_add=True)
+    
+    # === НОВЫЕ ПОЛЯ ===
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Пользователь')
+    
+    STATUS_CHOICES = [
+        ('pending', 'В ожидании'),
+        ('confirmed', 'Подтверждено'),
+        ('cancelled', 'Отменено'),
+    ]
+    status = models.CharField('Статус', max_length=20, choices=STATUS_CHOICES, default='pending')
+    # =================
 
     class Meta:
         verbose_name = 'Бронь'
@@ -50,6 +66,8 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f"{self.name} | {self.date} {self.time}"
+
+
     
     # === BAR MENU MODELS ===
 class BarCategory(models.Model):

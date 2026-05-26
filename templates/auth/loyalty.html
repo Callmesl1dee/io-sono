@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Бонусы | IO SONO{% endblock %}
+
+{% block content %}
+<div class="loyalty-container">
+    <div class="loyalty-card">
+        <div class="loyalty-header">
+            <h1 class="loyalty-title">🎁 Система лояльности</h1>
+            <p class="loyalty-subtitle">Чем больше бронируете — тем больше бонусов</p>
+        </div>
+        
+        <div class="loyalty-balance">
+            <span class="loyalty-label">Ваши баллы</span>
+            <span class="loyalty-points">{{ points }}</span>
+            <span class="loyalty-currency">IO-Coins</span>
+        </div>
+        
+        <div class="loyalty-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ points|add:0 }}%"></div>
+            </div>
+            <p class="progress-text">{{ points }}/100 до следующего уровня</p>
+        </div>
+        
+        <div class="loyalty-tiers">
+            <div class="tier {% if points >= 0 %}tier--active{% endif %}">
+                <span class="tier-icon">🥉</span>
+                <span class="tier-name">Бронзовый</span>
+                <span class="tier-req">0+ баллов</span>
+            </div>
+            <div class="tier {% if points >= 100 %}tier--active{% endif %}">
+                <span class="tier-icon">🥈</span>
+                <span class="tier-name">Серебряный</span>
+                <span class="tier-req">100+ баллов</span>
+            </div>
+            <div class="tier {% if points >= 300 %}tier--active{% endif %}">
+                <span class="tier-icon">🥇</span>
+                <span class="tier-name">Золотой</span>
+                <span class="tier-req">300+ баллов</span>
+            </div>
+        </div>
+        
+        <a href="{% url 'core:profile' %}" class="btn btn--outline">← Вернуться к броням</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div class="dashboard-grid">
+    
+    <!-- === 1. ЛЕВАЯ КОЛОНКА: СТАТИСТИКА === -->
+    <div class="stats-panel">
+        <div class="stat-card stat-card--green">
+            <div class="stat-label">👥 Гостей сегодня</div>
+            <div class="stat-value">{{ today_guests }}</div>
+        </div>
+        
+        <div class="stat-card stat-card--blue">
+            <div class="stat-label">📅 Броней на сегодня</div>
+            <div class="stat-value">{{ today_bookings }}</div>
+        </div>
+        
+        <div class="stat-card stat-card--orange">
+            <div class="stat-label">🪑 Забронировано столов</div>
+            <div class="stat-value">{{ reserved_tables }}</div>
+        </div>
+        
+        <a href="{{ analytics_url }}" class="analytics-btn">
+             Перейти к полной аналитике
+        </a>
+    </div>
+
+        <!-- === 2. ЦЕНТРАЛЬНАЯ КОЛОНКА: МОДЕЛИ === -->
+    <div class="models-panel">
+        <h2>📋 Управление контентом</h2>
+        
+        {% for app in app_list %}
+        <div class="app-section">
+            <!-- Заголовок app.name убран -->
+            {% for model in app.models %}
+            <div class="model-row">
+                <span class="model-name">{{ model.name }}</span>
+                <div class="model-links">
+                    {% if model.add_url %}
+                    <a href="{{ model.add_url }}" class="addlink">+ Добавить</a>
+                    {% endif %}
+                    {% if model.admin_url %}
+                    <a href="{{ model.admin_url }}" class="changelink">✎ Изменить</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- === 3. ПРАВАЯ КОЛОНКА: ПОСЛЕДНИЕ ДЕЙСТВИЯ === -->
+    <div class="recent-panel">
+        <h2> Последние действия</h2>
+        
+        {% if recent_actions_list %}
+        <ul class="action-list">
+            {% for action in recent_actions_list %}
+            <li class="action-item">
+                <div>
+                    <a href="{{ action.url }}">
+                        {% if action.is_addition %}➕{% elif action.is_change %}✏️{% elif action.is_deletion %}{% endif %}
+                        {{ action.object_repr }}
+                    </a>
+                </div>
+                <span class="action-time">{{ action.action_time|date:"d.m.Y H:i" }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p style="color: #64748b;">Действий пока нет</p>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

@@ -135,3 +135,78 @@ def loyalty(request):
     points = Reservation.objects.filter(user=request.user, status='confirmed').count() * 10
     
     return render(request, 'auth/loyalty.html', {'points': points})
+
+# === ADMIN ANALYTICS ===
+from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Count, Sum, F
+from django.utils import timezone
+from datetime import timedelta, datetime
+import json
+
+@staff_member_required
+def admin_analytics(request):
+    """Дашборд с аналитикой для админки"""
+    
+    # === 1. Бронирования по дням (за последние 14 дней) ===
+    today = timezone.now().date()
+    dates = [(today - timedelta(days=i)) for i in range(13, -1, -1)]
+    
+    bookings_by_day = []
+    for date in dates:
+        count = Reservation.objects.filter(date=date).count()
+        bookings_by_day.append({
+            'date': date.strftime('%d.%m'),
+            'count': count
+        })
+    
+    # === 2. Топ категорий блюд (по количеству блюд в категории) ===
+    # Упрощённо: считаем, сколько блюд в каждой категории
+    from .models import Category
+    category_stats = Category.objects.annotate(
+        items_count=Count('items')  # ← Исправлено: 'items' вместо 'menuitem'
+    ).order_by('-items_count')[:5]
+    
+    top_categories = [
+        {'name': cat.name, 'count': cat.items_count} 
+        for cat in category_stats
+    ]
+    
+    # === 3. Статистика по статусам ===
+    status_stats = Reservation.objects.values('status').annotate(
+        count=Count('id')
+    ).order_by('status')
+    
+    status_labels = [s['status'] for s in status_stats]
+    status_counts = [s['count'] for s in status_stats]
+    
+    # === 4. Карточки с метриками ===
+    total_bookings = Reservation.objects.count()
+    confirmed_bookings = Reservation.objects.filter(status='confirmed').count()
+    total_guests = Reservation.objects.aggregate(total=Sum('guests'))['total'] or 0
+    avg_guests = round(total_guests / total_bookings, 1) if total_bookings > 0 else 0
+    
+    # === 5. Брони по количеству гостей (гистограмма) ===
+    guests_stats = Reservation.objects.values('guests').annotate(
+        count=Count('id')
+    ).order_by('guests')
+    
+    guests_labels = [f"{s['guests']} чел." for s in guests_stats]
+    guests_counts = [s['count'] for s in guests_stats]
+    
+    context = {
+        'title': 'Аналитика',
+        'bookings_by_day': json.dumps(bookings_by_day),
+        'top_categories': json.dumps(top_categories),
+        'status_labels': json.dumps(status_labels),
+        'status_counts': json.dumps(status_counts),
+        'guests_labels': json.dumps(guests_labels),
+        'guests_counts': json.dumps(guests_counts),
+        'metrics': {
+            'total_bookings': total_bookings,
+            'confirmed_bookings': confirmed_bookings,
+            'total_guests': total_guests,
+            'avg_guests': avg_guests,
+        }
+    }
+    
+    return render(request, 'admin/analytics.html', context)

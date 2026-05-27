@@ -1,0 +1,214 @@
+/* static/css/admin.css */
+
+/* === ОБЩИЕ НАСТРОЙКИ === */
+#container {
+    max-width: 100%;
+    padding: 0;
+}
+
+#header {
+    background: #0f172a;
+    color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#header a:link, #header a:visited {
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Скрываем стандартный левый сайдбар Django */
+#nav-sidebar, .toggle-nav-sidebar {
+    display: none !important;
+}
+
+body.dashboard #content {
+    margin: 0;
+    padding: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* === 3-КОЛОНОЧНЫЙ ГРИД === */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr 320px; /* Статистика | Модели | Действия */
+    gap: 2rem;
+    align-items: start;
+}
+
+/* === ЛЕВАЯ КОЛОНКА: СТАТИСТИКА === */
+.stats-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stat-card {
+    padding: 1.5rem;
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    /* Убрали transition transform, чтобы не двигалось */
+}
+
+.stat-card--green { background: linear-gradient(135deg, #15803d 0%, #166534 100%); }
+.stat-card--blue { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); }
+.stat-card--orange { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); }
+
+.stat-value {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0.25rem 0;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+.analytics-btn {
+    display: block;
+    padding: 1rem;
+    background: #334155;
+    border: 2px solid #475569;
+    border-radius: 8px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s, border-color 0.2s; /* Только цвет, без сдвига */
+}
+
+.analytics-btn:hover {
+    background: #475569;
+    border-color: #64748b;
+}
+
+/* === ЦЕНТРАЛЬНАЯ КОЛОНКА: МОДЕЛИ === */
+.models-panel {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 1.5rem;
+    color: #fff;
+}
+
+.models-panel h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 1rem;
+}
+
+.app-section {
+    margin-bottom: 2rem;
+}
+
+.app-section h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+}
+
+/* === ЦЕНТРАЛЬНАЯ КОЛОНКА: ИСПРАВЛЕННАЯ ВЁРСТКА === */
+.model-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    gap: 1rem; /* Отступ между текстом и кнопками */
+    transition: background 0.2s;
+}
+
+.model-name {
+    font-weight: 500;
+    color: #e2e8f0;
+    flex: 1;              /* Занимает всё свободное место */
+    min-width: 0;         /* КРИТИЧНО: разрешает сжатие для ellipsis */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;  /* Не переносит текст */
+}
+
+.model-links {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;       /* Кнопки никогда не сжимаются */
+}
+
+.model-links a {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    text-decoration: none;
+    white-space: nowrap;  /* Текст кнопок не переносится */
+}
+
+/* Убираем подчёркивание у ссылок в строках моделей */
+.model-row a { text-decoration: none; }
+.model-row a:hover { text-decoration: underline; }
+
+.addlink { color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+.changelink { color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
+
+/* === ПРАВАЯ КОЛОНКА: ДЕЙСТВИЯ === */
+.recent-panel {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 1.5rem;
+    color: #fff;
+}
+
+.recent-panel h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+.action-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.action-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #334155;
+    font-size: 0.9rem;
+}
+
+.action-item:last-child { border-bottom: none; }
+
+.action-item a {
+    color: #60a5fa;
+    text-decoration: none;
+}
+
+.action-item a:hover {
+    text-decoration: underline;
+}
+
+.action-time {
+    display: block;
+    color: #64748b;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+/* === АДАПТИВ === */
+@media (max-width: 1100px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}

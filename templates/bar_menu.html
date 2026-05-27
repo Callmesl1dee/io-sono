@@ -12,9 +12,10 @@
 
 <section class="section bar-menu">
     <div class="container">
-        <!-- Б/А напитки -->
+        
+        <!-- === 1. БЕЗАЛКОГОЛЬНЫЕ НАПИТКИ === -->
         <div class="menu-section-type">
-            <h2 class="menu-section-type__title"> Безалкогольные напитки</h2>
+            <h2 class="menu-section-type__title">🥤 Безалкогольные напитки</h2>
             <div class="bar-grid">
                 {% for item in bar_types.non_alcoholic %}
                 <div class="bar-item">
@@ -28,7 +29,7 @@
                         {% endif %}
                         <div class="bar-item__meta">
                             {% if item.volume %}
-                            <span class="bar-item__volume">{{ item.volume }} мл</span>
+                            <span class="bar-item__volume">{{ item.volume }}</span>
                             {% endif %}
                             <span class="bar-item__price">{{ item.price }} ₽</span>
                         </div>
@@ -40,7 +41,7 @@
             </div>
         </div>
 
-        <!-- Алкогольные напитки -->
+        <!-- === 2. АЛКОГОЛЬНЫЕ НАПИТКИ === -->
         <div class="menu-section-type">
             <h2 class="menu-section-type__title">🍷 Алкогольные напитки</h2>
             <div class="bar-grid">
@@ -55,6 +56,9 @@
                         <p class="bar-item__desc">{{ item.description }}</p>
                         {% endif %}
                         <div class="bar-item__meta">
+                            {% if item.volume %}
+                            <span class="bar-item__volume">{{ item.volume }}</span>
+                            {% endif %}
                             {% if item.alcohol_content %}
                             <span class="bar-item__alcohol">{{ item.alcohol_content }}</span>
                             {% endif %}
@@ -68,21 +72,28 @@
             </div>
         </div>
 
-        <!-- Классические коктейли -->
+        <!-- === 3. КЛАССИЧЕСКИЕ КОКТЕЙЛИ === -->
         <div class="menu-section-type">
-            <h2 class="menu-section-type__title">🍸 Классические коктейли</h2>
+            <h2 class="menu-section-type__title"> Классические коктейли</h2>
             <div class="bar-grid">
                 {% for item in bar_types.cocktail_classic %}
                 <div class="bar-item {% if item.is_featured %}bar-item--featured{% endif %}">
+                    <!-- ИСПРАВЛЕНО: Проверка фото -->
                     {% if item.image %}
                     <div class="bar-item__img" style="background-image: url('{{ item.image.url }}');"></div>
                     {% endif %}
+                    
                     <div class="bar-item__body">
+                        {% if item.is_featured %}<span class="featured-badge">⭐ Хит</span>{% endif %}
                         <h3 class="bar-item__name">{{ item.name }}</h3>
                         {% if item.description %}
                         <p class="bar-item__desc">{{ item.description }}</p>
                         {% endif %}
                         <div class="bar-item__meta">
+                            <!-- ИСПРАВЛЕНО: Добавлен объём -->
+                            {% if item.volume %}
+                            <span class="bar-item__volume">{{ item.volume }}</span>
+                            {% endif %}
                             {% if item.alcohol_content %}
                             <span class="bar-item__alcohol">{{ item.alcohol_content }}</span>
                             {% endif %}
@@ -96,21 +107,28 @@
             </div>
         </div>
 
-        <!-- Авторские коктейли -->
+        <!-- === 4. АВТОРСКИЕ КОКТЕЙЛИ === -->
         <div class="menu-section-type">
             <h2 class="menu-section-type__title">✨ Авторские коктейли</h2>
             <div class="bar-grid">
                 {% for item in bar_types.cocktail_author %}
                 <div class="bar-item bar-item--featured">
+                    <!-- ИСПРАВЛЕНО: Проверка фото -->
                     {% if item.image %}
                     <div class="bar-item__img" style="background-image: url('{{ item.image.url }}');"></div>
                     {% endif %}
+                    
                     <div class="bar-item__body">
+                        <span class="featured-badge">⭐ Авторский</span>
                         <h3 class="bar-item__name">{{ item.name }}</h3>
                         {% if item.description %}
                         <p class="bar-item__desc">{{ item.description }}</p>
                         {% endif %}
                         <div class="bar-item__meta">
+                            <!-- ИСПРАВЛЕНО: Добавлен объём -->
+                            {% if item.volume %}
+                            <span class="bar-item__volume">{{ item.volume }}</span>
+                            {% endif %}
                             {% if item.alcohol_content %}
                             <span class="bar-item__alcohol">{{ item.alcohol_content }}</span>
                             {% endif %}
@@ -123,6 +141,7 @@
                 {% endfor %}
             </div>
         </div>
+
     </div>
 </section>
 {% endblock %}

@@ -1,0 +1,248 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | Админка IO SONO{% endblock %}
+
+{% block extrastyle %}
+<style>
+    .analytics-dashboard {
+        padding: 20px;
+        background: #f5f5f5;
+        min-height: 100vh;
+    }
+    
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .metric-card {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+    
+    .metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #15803d;
+        margin: 0.5rem 0;
+    }
+    
+    .metric-label {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .chart-card {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .chart-card h3 {
+        margin: 0 0 1rem 0;
+        color: #333;
+        font-size: 1.1rem;
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 300px;
+    }
+    
+    @media (max-width: 768px) {
+        .charts-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="analytics-dashboard">
+    <h1>📊 Аналитика ресторана</h1>
+    
+    <!-- Метрики -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-label">Всего броней</div>
+            <div class="metric-value">{{ metrics.total_bookings }}</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Подтверждено</div>
+            <div class="metric-value">{{ metrics.confirmed_bookings }}</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Всего гостей</div>
+            <div class="metric-value">{{ metrics.total_guests }}</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Средний чек (гости)</div>
+            <div class="metric-value">{{ metrics.avg_guests }}</div>
+        </div>
+    </div>
+    
+    <!-- Графики -->
+    < class="charts-grid">
+        <!-- График бронирований по дням -->
+        <div class="chart-card">
+            <h3>📅 Бронирования по дням</h3>
+            <div class="chart-container">
+                <canvas id="bookingsChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Топ категорий блюд -->
+        <div class="chart-card">
+            <h3>🍝 Блюд в категориях</h3>
+            <div class="chart-container">
+                <canvas id="categoriesChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Статусы броней -->
+        <div class="chart-card">
+            <h3>📋 Статусы</h3>
+            <div class="chart-container">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Распределение по гостям -->
+        <div class="chart-card">
+            <h3>👥 Гости на бронь</h3>
+            <div class="chart-container">
+                <canvas id="guestsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // === График бронирований по дням ===
+    const bookingsData = {{ bookings_by_day|safe }};
+    new Chart(document.getElementById('bookingsChart'), {
+        type: 'line',
+        data: {
+            labels: bookingsData.map(d => d.date),
+            datasets: [{
+                label: 'Бронирования',
+                data: bookingsData.map(d => d.count),
+                borderColor: '#15803d',
+                backgroundColor: 'rgba(21, 128, 61, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            }
+        }
+    });
+    
+    // === Топ категорий ===
+    const categoriesData = {{ top_categories|safe }};
+    new Chart(document.getElementById('categoriesChart'), {
+        type: 'bar',
+        data: {
+            labels: categoriesData.map(c => c.name),
+            datasets: [{
+                label: 'Заказов',
+                data: categoriesData.map(c => c.count),
+                backgroundColor: ['#15803d', '#16a34a', '#22c55e', '#4ade80', '#86efac'],
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            }
+        }
+    });
+    
+    // === Статусы ===
+    const statusLabels = {{ status_labels|safe }};
+    const statusCounts = {{ status_counts|safe }};
+    const statusColors = {
+        'pending': '#f59e0b',
+        'confirmed': '#15803d',
+        'cancelled': '#dc2626'
+    };
+    
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels.map(s => {
+                const labels = {'pending': 'В ожидании', 'confirmed': 'Подтверждено', 'cancelled': 'Отменено'};
+                return labels[s] || s;
+            }),
+            datasets: [{
+                data: statusCounts,
+                backgroundColor: statusLabels.map(s => statusColors[s] || '#999'),
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+});
+
+    // === Распределение по количеству гостей ===
+    const guestsLabels = {{ guests_labels|safe }};
+    const guestsCounts = {{ guests_counts|safe }};
+    
+    new Chart(document.getElementById('guestsChart'), {
+        type: 'bar',
+        data: {
+            labels: guestsLabels,
+            datasets: [{
+                label: 'Бронирований',
+                data: guestsCounts,
+                backgroundColor: 'rgba(245, 158, 11, 0.7)',
+                borderColor: '#f59e0b',
+                borderWidth: 2,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            }
+        }
+    });
+    
+</script>
+{% endblock %}

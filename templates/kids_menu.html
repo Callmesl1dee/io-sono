@@ -25,17 +25,23 @@
             <h2 class="menu-category__title">{{ category.name }}</h2>
             <div class="kids-grid">
                 {% for item in category.items.all %}
-                <div class="kids-item {% if item.is_popular %}kids-item--popular{% endif %}">
+                <div class="kids-item dish-clickable {% if item.is_popular %}kids-item--popular{% endif %}"
+                     data-title="{{ item.name }}"
+                     data-desc="{{ item.description }}"
+                     data-price="{{ item.price }}"
+                     data-category="{{ item.category.name }}"
+                     data-volume="{{ item.age_recommendation }}"
+                     data-alcohol=""
+                     data-img="{% if item.image %}{{ item.image.url }}{% endif %}">
+                    
                     {% if item.image %}
                     <div class="kids-item__img" style="background-image: url('{{ item.image.url }}');"></div>
                     {% else %}
                     <div class="kids-item__img kids-item__img--placeholder">🍕</div>
                     {% endif %}
+                    
                     <div class="kids-item__body">
                         <h3 class="kids-item__name">{{ item.name }}</h3>
-                        {% if item.description %}
-                        <p class="kids-item__desc">{{ item.description }}</p>
-                        {% endif %}
                         {% if item.age_recommendation %}
                         <span class="kids-item__age">👶 {{ item.age_recommendation }}</span>
                         {% endif %}

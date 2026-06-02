@@ -19,16 +19,22 @@
             <h2 class="menu-category__title">{{ category.grouper.name }}</h2>
             <div class="dishes-grid dishes-grid--full">
                 {% for dish in category.list %}
-                <article class="dish-card dish-card--full">
+                <article class="dish-card dish-card--full dish-clickable"
+                         data-title="{{ dish.name }}"
+                         data-desc="{{ dish.description }}"
+                         data-price="{{ dish.price }}"
+                         data-category="{{ dish.category.name }}"
+                         data-img="{% if dish.image %}{{ dish.image.url }}{% endif %}">
+                    
                     {% if dish.image %}
                     <div class="dish-card__img" style="background-image: url('{{ dish.image.url }}');"></div>
                     {% else %}
                     <div class="dish-card__img dish-card__img--placeholder"></div>
                     {% endif %}
+                    
                     <div class="dish-card__body">
                         <span class="dish-card__cat">{{ dish.category.name }}</span>
                         <h3 class="dish-card__name">{{ dish.name }}</h3>
-                        <p class="dish-card__desc">{{ dish.description }}</p>
                         <div class="dish-card__price">{{ dish.price }} ₽</div>
                     </div>
                 </article>

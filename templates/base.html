@@ -7,7 +7,6 @@
     <title>{% block title %}IO SONO | Итальянский ресторан{% endblock %}</title>
     <meta name="description" content="Аутентичная итальянская кухня в центре города">
     
-    <!-- Google Fonts: Playfair Display (заголовки) + Inter (текст) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -26,7 +25,6 @@
                 <a href="{% url 'core:kids_menu' %}" class="nav__link">Детское</a>
                 <a href="{% url 'core:reservation' %}" class="nav__link">Бронь</a>
 
-                <!-- === ВЫПАДАЮЩЕЕ МЕНЮ ПОЛЬЗОВАТЕЛЯ === -->
                 {% if user.is_authenticated %}
                 <div class="user-menu">
                     <button class="user-menu__trigger" type="button">
@@ -58,10 +56,34 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Копирайт -->
     <div class="copyright">
         <div class="container">
             <p>© Все права защищены 2026 IO SONO</p>
+        </div>
+    </div>
+
+    <!-- === МОДАЛЬНОЕ ОКНО === -->
+    <div id="dish-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Закрыть">&times;</button>
+            
+            <div class="modal-image" id="modal-img-container">
+                <img id="modal-img" src="" alt="">
+            </div>
+            
+            <div class="modal-body">
+                <span class="modal-category" id="modal-category"></span>
+                <h2 class="modal-title" id="modal-title"></h2>
+                <div class="modal-tags">
+                    <span id="modal-volume"></span>
+                    <span id="modal-alcohol"></span>
+                </div>
+                <p class="modal-desc" id="modal-desc"></p>
+                <div class="modal-footer">
+                    <div class="modal-price" id="modal-price"></div>
+                  
+                </div>
+            </div>
         </div>
     </div>
 

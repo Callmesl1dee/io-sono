@@ -4,45 +4,100 @@
 
 {% block content %}
 <div class="profile-container">
-    <div class="profile-header">
-        <div>
-            <h1 class="profile-name">Мой кабинет</h1>
-            <p class="profile-greeting">Привет, <strong>{{ user.username }}</strong>!</p>
+    
+    <!-- ЛЕВАЯ КОЛОНКА: КАРТА ЛОЯЛЬНОСТИ -->
+    <div class="profile-sidebar">
+        <div class="loyalty-card">
+            <div class="loyalty-card__chip"></div>
+            <div class="loyalty-card__logo">IO SONO <span class="text-accent">CLUB</span></div>
+            <div class="loyalty-card__number">{{ user.username|upper }}</div>
+            <div class="loyalty-card__info">
+                <div>
+                    <span class="loyalty-label">Баллы</span>
+                    <span class="loyalty-value">{{ profile.bonus_points }}</span>
+                </div>
+                <div>
+                    <span class="loyalty-label">Уровень</span>
+                    <span class="loyalty-value">
+                        {% if profile.bonus_points > 500 %}GOLD{% elif profile.bonus_points > 100 %}SILVER{% else %}BRONZE{% endif %}
+                    </span>
+                </div>
+            </div>
         </div>
-        <!-- Кнопку выхода убрали отсюда - теперь она в выпадающем меню -->
+
+        <!-- Уведомление о копировании -->
+        <div id="copy-toast" class="copy-toast">✅ Код скопирован в буфер обмена</div>
+
+        <!-- Блок с реферальным кодом -->
+        <div class="referral-box">
+            <h3>🎁 Пригласи друга</h3>
+            <p>Поделись кодом и получи 20 баллов</p>
+            <div class="referral-code-box">
+                <code id="referral-code">{{ profile.referral_code }}</code>
+                <button class="btn-copy" onclick="copyReferralCode()" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Копировать
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div class="reservations-list">
-        <h2 class="section-title">История бронирований</h2>
+    <!-- ПРАВАЯ КОЛОНКА: ИСТОРИЯ -->
+    <div class="profile-main">
+        <h2 class="section-title">История посещений</h2>
         
         {% if reservations %}
-            <div class="reservations-table">
-                <div class="reservation-row header-row">
-                    <span>Дата</span>
-                    <span>Время</span>
-                    <span>Гости</span>
-                    <span>Статус</span>
-                    <span>Создано</span>
-                </div>
-
+            <div class="reservations-list">
                 {% for res in reservations %}
-                <div class="reservation-row">
-                    <span class="res-date">{{ res.date|date:"d.m.Y" }}</span>
-                    <span>{{ res.time }}</span>
-                    <span>{{ res.guests }} чел.</span>
-                    
-                    <span class="status-badge status-{{ res.status }}">
-                        {{ res.get_status_display }}
-                    </span>
-                    
-                    <span class="text-muted" style="font-size: 0.85rem;">{{ res.created_at|date:"d.m.Y H:i" }}</span>
+                <div class="reservation-card">
+                    <div class="reservation-card__header">
+                        <span class="res-date">{{ res.date|date:"d E Y" }}</span>
+                        <span class="status-badge status-{{ res.status }}">{{ res.get_status_display }}</span>
+                    </div>
+                    <div class="reservation-card__body">
+                        <div class="res-info">
+                            <span>🕒 {{ res.time }}</span>
+                            <span>👥 {{ res.guests }} гостей</span>
+                        </div>
+                        <div class="res-actions">
+                            <button class="btn-ghost" onclick="openReceiptModal({{ res.id }})">🧾 Чек</button>
+                            {% if res.status == 'pending' %}
+                            <button class="btn-ghost btn-ghost--danger">✖ Отменить</button>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
         {% else %}
-            <p class="text-muted" style="text-align: left; padding: 2rem 0;">Вы пока ничего не бронировали.</p>
-            <a href="{% url 'core:reservation' %}" class="btn btn--primary">Забронировать стол</a>
+            <div class="empty-state">
+                <p>Вы пока ничего не бронировали.</p>
+                <a href="{% url 'core:reservation' %}" class="btn btn--primary">Забронировать стол</a>
+            </div>
         {% endif %}
     </div>
+
 </div>
+
+<!-- Модалка для Чека -->
+<div id="receipt-modal" class="modal-overlay">
+    <div class="modal-content modal-content--receipt">
+        <button class="modal-close" onclick="document.getElementById('receipt-modal').classList.remove('active')">&times;</button>
+        <div id="receipt-content"></div>
+    </div>
+</div>
+
+<script>
+function openReceiptModal(id) {
+    fetch(`/receipt/${id}/`)
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('receipt-content').innerHTML = html;
+            document.getElementById('receipt-modal').classList.add('active');
+        });
+}
+</script>
 {% endblock %}

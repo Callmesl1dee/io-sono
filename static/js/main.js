@@ -245,3 +245,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+function copyReferralCode() {
+    const code = document.getElementById('referral-code').textContent;
+    const toast = document.getElementById('copy-toast');
+
+    navigator.clipboard.writeText(code).then(() => {
+        showToast(toast);
+    }).catch(() => {
+        // Фолбэк для старых браузеров
+        const textarea = document.createElement('textarea');
+        textarea.value = code;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        
+        showToast(toast);
+    });
+}
+
+function showToast(element) {
+    element.classList.add('show');
+    setTimeout(() => {
+        element.classList.remove('show');
+    }, 2000);
+}

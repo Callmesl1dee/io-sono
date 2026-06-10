@@ -1,0 +1,44 @@
+<div class="receipt-paper">
+    <div class="receipt-header">
+        <h3>IO SONO RESTAURANT</h3>
+        <p>ул. Итальянская, д. 1</p>
+        <p>ИНН 1234567890</p>
+    </div>
+    
+    <div class="receipt-body">
+        <div class="receipt-row">
+            <span>Дата:</span>
+            <span>{{ receipt.date|date:"d.m.Y" }}</span>
+        </div>
+        <div class="receipt-row">
+            <span>Время:</span>
+            <span>{{ receipt.time }}</span>
+        </div>
+        <div class="receipt-row">
+            <span>Стол (гостей):</span>
+            <span>{{ receipt.guests }} чел.</span>
+        </div>
+        <div class="receipt-row">
+            <span>Статус:</span>
+            <span>{{ receipt.status }}</span>
+        </div>
+        
+        <hr style="border: 1px dashed #ccc; margin: 15px 0;">
+        
+        <div class="receipt-item">
+            <span>Бронирование стола</span>
+            <span>{{ receipt.total_price }} ₽</span>
+        </div>
+        
+        <div class="receipt-total">
+            <span>ИТОГО:</span>
+            <span>{{ receipt.total_price }} ₽</span>
+        </div>
+    </div>
+    
+    <div class="receipt-footer">
+        <p>Спасибо, что выбрали нас!</p>
+        <p>Баллов начислено: +{{ receipt.guests|add:"0" }}</p> <!-- Пример логики -->
+        <p class="receipt-id">Чек №{{ receipt.id }}</p>
+    </div>
+</div>

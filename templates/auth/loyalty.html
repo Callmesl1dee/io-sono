@@ -3,45 +3,33 @@
 {% block title %}Бонусы | IO SONO{% endblock %}
 
 {% block content %}
-<div class="loyalty-container">
-    <div class="loyalty-card">
-        <div class="loyalty-header">
-            <h1 class="loyalty-title">🎁 Система лояльности</h1>
-            <p class="loyalty-subtitle">Чем больше бронируете — тем больше бонусов</p>
-        </div>
-        
-        <div class="loyalty-balance">
-            <span class="loyalty-label">Ваши баллы</span>
-            <span class="loyalty-points">{{ points }}</span>
-            <span class="loyalty-currency">IO-Coins</span>
-        </div>
-        
-        <div class="loyalty-progress">
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: {{ points|add:0 }}%"></div>
-            </div>
-            <p class="progress-text">{{ points }}/100 до следующего уровня</p>
-        </div>
-        
-        <div class="loyalty-tiers">
-            <div class="tier {% if points >= 0 %}tier--active{% endif %}">
-                <span class="tier-icon">🥉</span>
-                <span class="tier-name">Бронзовый</span>
-                <span class="tier-req">0+ баллов</span>
-            </div>
-            <div class="tier {% if points >= 100 %}tier--active{% endif %}">
-                <span class="tier-icon">🥈</span>
-                <span class="tier-name">Серебряный</span>
-                <span class="tier-req">100+ баллов</span>
-            </div>
-            <div class="tier {% if points >= 300 %}tier--active{% endif %}">
-                <span class="tier-icon">🥇</span>
-                <span class="tier-name">Золотой</span>
-                <span class="tier-req">300+ баллов</span>
-            </div>
-        </div>
-        
-        <a href="{% url 'core:profile' %}" class="btn btn--outline">← Вернуться к броням</a>
+<div class="loyalty-page">
+    <h1> Система лояльности</h1>
+    
+    
+    <div class="loyalty-balance-large">
+        Ваши баллы: <span class="text-accent">{{ profile.bonus_points }} IO-Coins</span>
     </div>
+    
+    <p style="font-size: 1.2rem; color: var(--clr-muted);">
+        {{ profile.bonus_points }} 100 до следующего уровня
+    </p>
+    
+    <div class="loyalty-tiers-list">
+        <div style="background: rgba(205, 127, 50, 0.2); border-left: 4px solid #cd7f32;">
+            <span>🥉</span>
+            <span><strong>Бронзовый</strong> — 0+ баллов</span>
+        </div>
+        <div style="background: rgba(192, 192, 192, 0.2); border-left: 4px solid #c0c0c0;">
+            <span>🥈</span>
+            <span><strong>Серебряный</strong> — 100+ баллов</span>
+        </div>
+        <div style="background: rgba(255, 215, 0, 0.2); border-left: 4px solid #ffd700;">
+            <span>🥇</span>
+            <span><strong>Золотой</strong> — 300+ баллов</span>
+        </div>
+    </div>
+    
+    <a href="{% url 'core:profile' %}" class="btn btn--outline">← Вернуться к броням</a>
 </div>
 {% endblock %}

@@ -17,4 +17,6 @@ urlpatterns = [
     
     path('reservation/', views.reservation, name='reservation'),
     path('loyalty/', views.loyalty, name='loyalty'),
+    
+    path('receipt/<int:reservation_id>/', views.download_receipt, name='receipt'),
 ]

@@ -1310,3 +1310,389 @@ a { text-decoration: none; color: inherit; }
     content: '🍸';
     opacity: 0.5;
 }
+
+/* === УЛУЧШЕННЫЙ ПРОФИЛЬ И ЛОЯЛЬНОСТЬ === */
+
+/* Контейнер профиля */
+.profile-container {
+    max-width: 900px;
+    margin: 3rem auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+/* Карточка лояльности */
+.loyalty-card {
+    max-width: 400px;
+    margin: 0 auto 2rem;
+    padding: 3rem 2rem;
+}
+
+.loyalty-card__logo {
+    font-size: 2.5rem !important;
+    margin-bottom: 2rem;
+}
+
+.loyalty-card__number {
+    font-size: 1.5rem !important;
+    letter-spacing: 3px;
+}
+
+.loyalty-card__info {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+}
+
+.loyalty-value {
+    font-size: 2rem !important;
+    display: block;
+    margin-top: 0.5rem;
+}
+
+.loyalty-label {
+    font-size: 0.9rem !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Реферальный блок */
+.referral-box {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+.referral-box h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.referral-box p {
+    font-size: 1.1rem;
+    color: var(--clr-muted);
+}
+
+.referral-code-box {
+    margin: 1.5rem auto 0;
+    max-width: 300px;
+    padding: 1rem;
+}
+
+.referral-code-box code {
+    font-size: 1.3rem !important;
+    padding: 0.5rem;
+}
+
+/* Заголовки секций */
+.section-title {
+    font-size: 2.5rem;
+    font-family: var(--font-serif);
+    margin: 3rem 0 2rem;
+    text-align: center;
+}
+
+/* Список бронирований */
+.reservations-list {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.reservation-card {
+    text-align: left;
+    margin-bottom: 1.5rem;
+    padding: 2rem;
+}
+
+.reservation-card__header {
+    margin-bottom: 1.5rem;
+}
+
+.res-date {
+    font-size: 1.3rem !important;
+    font-family: var(--font-serif);
+}
+
+.reservation-card__body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.res-info {
+    display: flex;
+    gap: 2rem;
+    font-size: 1.1rem;
+}
+
+.res-info span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Кнопки */
+.btn-ghost {
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+}
+
+/* Пустое состояние */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.empty-state p {
+    font-size: 1.2rem;
+    color: var(--clr-muted);
+    margin-bottom: 2rem;
+}
+
+.empty-state .btn {
+    font-size: 1.1rem;
+    padding: 1rem 2.5rem;
+}
+
+/* Страница лояльности */
+.loyalty-page {
+    max-width: 800px;
+    margin: 4rem auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+.loyalty-page h1 {
+    font-size: 3rem;
+    font-family: var(--font-serif);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.loyalty-page > p {
+    font-size: 1.3rem;
+    color: var(--clr-muted);
+    margin-bottom: 2rem;
+}
+
+.loyalty-balance-large {
+    font-size: 2rem;
+    margin: 2rem 0;
+    color: var(--clr-accent);
+}
+
+.loyalty-tiers-list {
+    text-align: left;
+    max-width: 500px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: var(--clr-surface);
+    border-radius: 16px;
+}
+
+.loyalty-tiers-list div {
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Кнопка возврата */
+.btn--outline {
+    display: inline-block;
+    margin: 2rem auto;
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 1rem;
+        margin: 2rem auto;
+    }
+    
+    .loyalty-card__logo {
+        font-size: 2rem !important;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .loyalty-page h1 {
+        font-size: 2rem;
+    }
+    
+    .res-info {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* === КНОПКА КОПИРОВАНИЯ РЕФЕРАЛЬНОГО КОДА === */
+.referral-code-box {
+    display: flex;
+    align-items: center;
+    background: rgba(21, 128, 61, 0.1);
+    border: 2px solid var(--clr-primary);
+    border-radius: 12px;
+    padding: 0.5rem;
+    margin: 1.5rem auto 0;
+    max-width: 350px;
+    gap: 1rem;
+}
+
+.referral-code-box code {
+    flex: 1;
+    background: transparent;
+    color: var(--clr-primary);
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    border: none;
+    text-align: center;
+}
+
+.btn-copy {
+    background: var(--clr-primary);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+.btn-copy:hover {
+    background: var(--clr-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(21, 128, 61, 0.4);
+}
+
+.btn-copy:active {
+    transform: translateY(0);
+}
+
+.btn-copy.copied {
+    background: #10b981;
+    color: white;
+}
+
+.btn-copy.copied:hover {
+    background: #059669;
+}
+
+/* Иконка копирования */
+.btn-copy svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 768px) {
+    .referral-code-box {
+        flex-direction: column;
+        max-width: 300px;
+    }
+    
+    .btn-copy {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* === TOAST УВЕДОМЛЕНИЕ === */
+.copy-toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: #10b981; /* Зелёный */
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 3000;
+    pointer-events: none;
+}
+
+.copy-toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* === КНОПКА КОПИРОВАНИЯ (СТАТИЧНАЯ) === */
+.btn-copy {
+    background: var(--clr-primary);
+    border: none;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-copy:hover {
+    background: var(--clr-primary-hover);
+}
+
+.btn-copy:active {
+    transform: scale(0.98);
+}
+
+.referral-code-box {
+    display: flex;
+    align-items: center;
+    background: rgba(21, 128, 61, 0.08);
+    border: 1px solid rgba(21, 128, 61, 0.3);
+    border-radius: 10px;
+    padding: 0.5rem;
+    margin: 1.5rem auto 0;
+    max-width: 380px;
+    gap: 1rem;
+}
+
+.referral-code-box code {
+    flex: 1;
+    background: transparent;
+    color: var(--clr-text);
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.5rem;
+    border: none;
+    text-align: center;
+    letter-spacing: 0.5px;
+}

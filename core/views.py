@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import MenuItem, Category, BarItem, KidsItem, BarCategory, KidsCategory, Reservation
+from .models import UserProfile, Reservation  # Добавь UserProfile сюда
 
 def home(request):
     dishes = MenuItem.objects.select_related('category').filter(is_featured=True)[:6]
@@ -115,17 +116,65 @@ def logout_view(request):
     logout(request)
     return redirect('core:home')
 
+# В core/views.py
+
 def profile(request):
-    # Если пользователь не залогинен -> в логин
     if not request.user.is_authenticated:
         return redirect('core:login')
     
-    # Берем брони текущего пользователя
-    user_reservations = Reservation.objects.filter(user=request.user)
+    user = request.user
     
-    return render(request, 'auth/profile.html', {
-        'reservations': user_reservations
-    })
+    # === ИСПРАВЛЕНИЕ: Создаем профиль, если его нет ===
+    try:
+        profile = user.profile
+    except UserProfile.DoesNotExist:
+        # Если профиля нет (старый юзер), создаем его
+        profile = UserProfile.objects.create(user=user)
+    # ==================================================
+    
+    # История бронирований
+    reservations = Reservation.objects.filter(user=user).order_by('-created_at')
+    
+    # Подсчет баллов (логика: 100 баллов за каждую подтвержденную бронь)
+    confirmed_count = Reservation.objects.filter(user=user, status='confirmed').count()
+    expected_points = confirmed_count * 100
+    
+    # Если баллов в базе меньше, чем должно быть - обновляем
+    if profile.bonus_points < expected_points:
+        profile.bonus_points = expected_points
+        profile.save()
+
+    context = {
+        'profile': profile,
+        'reservations': reservations,
+        'total_spent': reservations.count() * 1500, # Примерная сумма трат (заглушка)
+    }
+    
+    return render(request, 'auth/profile.html', context)
+    
+    
+def download_receipt(request, reservation_id):
+    """Возвращает HTML-фрагмент чека для модалки"""
+    if not request.user.is_authenticated:
+        return redirect('core:login')
+    
+    try:
+        reservation = Reservation.objects.get(id=reservation_id, user=request.user)
+    except Reservation.DoesNotExist:
+        return redirect('core:profile')
+    
+    # Данные для чека
+    receipt_data = {
+        'id': reservation.id,
+        'date': reservation.date,
+        'time': reservation.time,
+        'guests': reservation.guests,
+        'status': reservation.get_status_display(),
+        'total_price': reservation.guests * 1500,  # Условная цена
+        'created': reservation.created_at,
+    }
+    
+    return render(request, 'auth/receipt_modal.html', {'receipt': receipt_data})
     
 def loyalty(request):
     if not request.user.is_authenticated:

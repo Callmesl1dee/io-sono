@@ -152,3 +152,38 @@ class KidsItem(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.price} ₽)"
+    
+    # В core/models.py (добавь в конец, перед импортами или после всех моделей)
+import random
+import string
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    bonus_points = models.PositiveIntegerField('Бонусные баллы', default=0)
+    referral_code = models.CharField('Реферальный код', max_length=20, unique=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Профиль пользователя'
+        verbose_name_plural = 'Профили пользователей'
+
+    def __str__(self):
+        return f'{self.user.username} ({self.bonus_points} pts)'
+
+    def save(self, *args, **kwargs):
+        # Автоматически генерируем реферальный код, если его нет
+        if not self.referral_code:
+            self.referral_code = f'REF-{self.user.id}-{random.randint(1000, 9999)}'
+        super().save(*args, **kwargs)
+
+# Сигнал: при создании нового юзера, создаем и профиль
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Схема зала | IO SONO{% endblock %}
+{% block content %}
+<section class="hall-section">
+    <div class="container">
+        <h1 class="page-header__title" style="text-align:center;">Выберите <span class="text-accent">стол</span></h1>
+        
+        <div class="hall-map-wrapper">
+            <div class="hall-map-bg"></div>
+            <div id="tables-layer" class="tables-layer">
+                <p style="color:white; text-align:center; margin-top: 30%;">Загрузка плана...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ПОПАП -->
+<div id="table-popup" class="table-popup">
+    <button class="popup-close" onclick="closePopup()">×</button>
+    <h3 class="popup-title" id="popup-title">Стол №</h3>
+    
+    <div class="popup-date-nav">
+        <button onclick="changeDate(-1)">‹</button>
+        <span id="popup-date-display">Сегодня</span>
+        <button onclick="changeDate(1)">›</button>
+    </div>
+
+    <div class="popup-slots" id="popup-slots"></div>
+    <button id="book-now-btn" class="btn btn--primary" onclick="bookTable()">Забронировать слот</button>
+</div>
+
+<script src="{% static 'js/hall.js' %}"></script>
+{% endblock %}

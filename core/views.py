@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import MenuItem, Category, BarItem, KidsItem, BarCategory, KidsCategory, Reservation
 from .models import UserProfile, Reservation  # Добавь UserProfile сюда
+from django.http import HttpResponse, JsonResponse  # Добавь HttpResponse сюда
 
 def home(request):
     dishes = MenuItem.objects.select_related('category').filter(is_featured=True)[:6]
@@ -259,3 +260,119 @@ def admin_analytics(request):
     }
     
     return render(request, 'admin/analytics.html', context)
+
+from django.http import JsonResponse
+from .models import Table, Reservation
+import json
+
+def hall_view(request):
+    return render(request, 'hall.html')
+
+def api_tables(request):
+    """Отдает список столов для карты"""
+    tables = Table.objects.filter(is_active=True)
+    data = [{'id': t.id, 'number': t.number, 'x': t.pos_x, 'y': t.pos_y} for t in tables]
+    return JsonResponse(data, safe=False)
+
+def api_slots(request):
+    """Отдает статус слотов для конкретного стола"""
+    table_id = request.GET.get('table')
+    date = request.GET.get('date')
+    
+    # Генерируем тайминги (11-13, 13-15 и т.д.)
+    times = ["10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]    
+    # Смотрим, какие слоты уже заняты
+    # Примечание: time здесь это начало слота
+    busy_slots = Reservation.objects.filter(
+        table_id=table_id, 
+        date=date, 
+        status__in=['confirmed', 'pending']
+    ).values_list('time', flat=True)
+    
+    result = []
+    for t in times:
+        # Формируем интервал: 10:00 → 10:00-12:00
+        start_hour = int(t.split(':')[0])
+        end_hour = start_hour + 2
+        result.append({
+            'time': f"{t}-{end_hour:02d}:00",  # Например: "10:00-12:00"
+            'is_busy': t in busy_slots
+        })
+        
+    return JsonResponse(result, safe=False)
+
+def init_hall_tables(request):
+    """Запусти один раз: /admin/init-hall/"""
+    from .models import Table
+    if Table.objects.exists():
+        return HttpResponse("Столы уже созданы.")
+        
+    # Приблизительные координаты (X%, Y%) под твою схему
+    tables_data = [
+        # Нижний ряд (справа налево)
+        {'n': '1', 'x': 88, 'y': 88, 's': 6}, {'n': '2', 'x': 76, 'y': 88, 's': 6},
+        {'n': '3', 'x': 64, 'y': 88, 's': 6}, {'n': '4', 'x': 52, 'y': 88, 's': 6},
+        {'n': '5', 'x': 40, 'y': 88, 's': 6}, {'n': '6', 'x': 28, 'y': 88, 's': 6},
+        # Ряд выше
+        {'n': '7', 'x': 84, 'y': 72, 's': 4}, {'n': '8', 'x': 72, 'y': 72, 's': 4},
+        {'n': '9', 'x': 60, 'y': 72, 's': 4}, {'n': '10', 'x': 48, 'y': 72, 's': 4},
+        # Центр
+        {'n': '11', 'x': 86, 'y': 55, 's': 4}, {'n': '12', 'x': 74, 'y': 58, 's': 4},
+        {'n': '13', 'x': 62, 'y': 60, 's': 4}, {'n': '14', 'x': 76, 'y': 48, 's': 4},
+        {'n': '15', 'x': 64, 'y': 50, 's': 4}, {'n': '16', 'x': 52, 'y': 52, 's': 4},
+        {'n': '17', 'x': 42, 'y': 55, 's': 2},
+        # Верхний центр
+        {'n': '18', 'x': 82, 'y': 38, 's': 4}, {'n': '19', 'x': 70, 'y': 40, 's': 4},
+        {'n': '20', 'x': 58, 'y': 40, 's': 4}, {'n': '21', 'x': 46, 'y': 40, 's': 4},
+        # Верхний ряд
+        {'n': '22', 'x': 88, 'y': 22, 's': 6}, {'n': '23', 'x': 76, 'y': 22, 's': 6},
+        {'n': '24', 'x': 64, 'y': 22, 's': 6}, {'n': '25', 'x': 52, 'y': 22, 's': 6},
+        {'n': '26', 'x': 40, 'y': 22, 's': 6}, {'n': '27', 'x': 28, 'y': 22, 's': 6},
+        # VIP
+        {'n': 'VIP 1', 'x': 92, 'y': 65, 's': 8}, {'n': 'VIP 2', 'x': 92, 'y': 45, 's': 8},
+    ]
+    
+    for t in tables_data:
+        Table.objects.create(number=t['n'], seats=t['s'], pos_x=t['x'], pos_y=t['y'])
+        
+    return HttpResponse(f"✅ Создано {Table.objects.count()} столов. Настрой координаты в админке, если нужно.")
+
+def reservation(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        phone = request.POST.get('phone')
+        date = request.POST.get('date')
+        time = request.POST.get('time')
+        guests = request.POST.get('guests', 2)
+        table_id = request.POST.get('table')  # Новый параметр
+        
+        new_reservation = Reservation.objects.create(
+            name=name,
+            phone=phone,
+            date=date,
+            time=time,
+            guests=guests,
+        )
+        
+        # Привязываем стол, если выбран
+        if table_id:
+            try:
+                table = Table.objects.get(id=table_id)
+                new_reservation.table = table
+                new_reservation.save()
+            except Table.DoesNotExist:
+                pass
+        
+        if request.user.is_authenticated:
+            new_reservation.user = request.user
+            new_reservation.save()
+        
+        messages.success(request, 'Столик забронирован! Мы свяжемся с вами.')
+        return redirect('core:profile')
+    
+    # Если есть GET-параметры (из схемы), подставляем их
+    context = {}
+    if request.GET.get('table'):
+        context['preselected_table'] = request.GET.get('table')
+    
+    return render(request, 'reservation.html', context)

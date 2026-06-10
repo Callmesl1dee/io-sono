@@ -36,6 +36,22 @@ class MenuItem(models.Model):
         return f"{self.name} ({self.price} ₽)"
 
 # 3. Модель бронирования столов
+
+class Table(models.Model):
+    number = models.CharField('Номер стола', max_length=10)
+    seats = models.PositiveIntegerField('Мест', default=2)
+    pos_x = models.IntegerField('Позиция X (%)', default=0)
+    pos_y = models.IntegerField('Позиция Y (%)', default=0)
+    is_active = models.BooleanField('Активен', default=True)
+
+    class Meta:
+        verbose_name = 'Стол'
+        verbose_name_plural = 'Столы'
+        ordering = ['number']
+
+    def __str__(self):
+        return f"Стол №{self.number}"
+
 # В начало файла добавь импорт
 from django.contrib.auth.models import User
 
@@ -51,9 +67,12 @@ class Reservation(models.Model):
     # === НОВЫЕ ПОЛЯ ===
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Пользователь')
     
+    table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Стол')
+    
     STATUS_CHOICES = [
         ('pending', 'В ожидании'),
         ('confirmed', 'Подтверждено'),
+        ('blocked', 'Заблокировано админом'),
         ('cancelled', 'Отменено'),
     ]
     status = models.CharField('Статус', max_length=20, choices=STATUS_CHOICES, default='pending')

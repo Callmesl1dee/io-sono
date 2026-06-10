@@ -1,59 +1,207 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Бронирование | IO SONO{% endblock %}
 
 {% block content %}
-<section class="page-header">
+<section class="reservation-section">
     <div class="container">
-        <h1 class="page-header__title">Забронировать <span class="text-accent">стол</span></h1>
-        <p class="page-header__desc">Заполните форму, и мы свяжемся с вами для подтверждения</p>
-    </div>
-</section>
+        <div class="page-header" style="text-align: center; margin-bottom: 2rem;">
+            <h1 class="page-header__title">Забронировать <span class="text-accent">стол</span></h1>
+            <p class="page-header__desc">Выберите стол на схеме или заполните форму</p>
+        </div>
 
-<section class="section reservation-section">
-    <div class="container">
+        <!-- === SVG СХЕМА ЗАЛА === -->
+        <div class="hall-map-svg" style="margin-bottom: 3rem;">
+            <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+                <!-- Фон -->
+                <rect width="1000" height="600" fill="#0f0f0f" rx="20"/>
+                
+                <!-- Стены -->
+                <rect x="20" y="20" width="960" height="560" fill="none" stroke="#333" stroke-width="3"/>
+                
+                <!-- Вход -->
+                <rect x="450" y="15" width="100" height="10" fill="#15803d"/>
+                <text x="500" y="40" text-anchor="middle" fill="#666" font-size="12">ВХОД</text>
+                
+                <!-- Барная стойка -->
+                <rect x="50" y="500" width="200" height="60" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
+                <text x="150" y="535" text-anchor="middle" fill="#666" font-size="14">БАР</text>
+                
+                <!-- СТОЛ 1 (4 места) -->
+                <g class="svg-table" data-id="1" transform="translate(300, 100)" onclick="selectTableDirectly(1, '1')">
+                    <rect x="-30" y="-30" width="60" height="60" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="0" y="5" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">1</text>
+                    <circle cx="-30" cy="-30" r="5" fill="#666"/>
+                    <circle cx="30" cy="-30" r="5" fill="#666"/>
+                    <circle cx="30" cy="30" r="5" fill="#666"/>
+                    <circle cx="-30" cy="30" r="5" fill="#666"/>
+                </g>
+                
+                <!-- СТОЛ 2 (4 места) -->
+                <g class="svg-table" data-id="2" transform="translate(450, 100)" onclick="selectTableDirectly(2, '2')">
+                    <rect x="-30" y="-30" width="60" height="60" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="0" y="5" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">2</text>
+                    <circle cx="-30" cy="-30" r="5" fill="#666"/>
+                    <circle cx="30" cy="-30" r="5" fill="#666"/>
+                    <circle cx="30" cy="30" r="5" fill="#666"/>
+                    <circle cx="-30" cy="30" r="5" fill="#666"/>
+                </g>
+                
+                <!-- СТОЛ 3 (4 места) -->
+                <g class="svg-table" data-id="3" transform="translate(600, 100)" onclick="selectTableDirectly(3, '3')">
+                    <rect x="-30" y="-30" width="60" height="60" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="0" y="5" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">3</text>
+                    <circle cx="-30" cy="-30" r="5" fill="#666"/>
+                    <circle cx="30" cy="-30" r="5" fill="#666"/>
+                    <circle cx="30" cy="30" r="5" fill="#666"/>
+                    <circle cx="-30" cy="30" r="5" fill="#666"/>
+                </g>
+                
+                <!-- СТОЛ 4 (6 мест) -->
+                <g class="svg-table" data-id="4" transform="translate(300, 250)" onclick="selectTableDirectly(4, '4')">
+                    <rect x="-40" y="-35" width="80" height="70" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="0" y="5" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">4</text>
+                    <circle cx="-40" cy="-35" r="5" fill="#666"/>
+                    <circle cx="0" cy="-35" r="5" fill="#666"/>
+                    <circle cx="40" cy="-35" r="5" fill="#666"/>
+                    <circle cx="40" cy="35" r="5" fill="#666"/>
+                    <circle cx="0" cy="35" r="5" fill="#666"/>
+                    <circle cx="-40" cy="35" r="5" fill="#666"/>
+                </g>
+                
+                <!-- СТОЛ 5 (6 мест) -->
+                <g class="svg-table" data-id="5" transform="translate(500, 250)" onclick="selectTableDirectly(5, '5')">
+                    <rect x="-40" y="-35" width="80" height="70" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="0" y="5" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">5</text>
+                    <circle cx="-40" cy="-35" r="5" fill="#666"/>
+                    <circle cx="0" cy="-35" r="5" fill="#666"/>
+                    <circle cx="40" cy="-35" r="5" fill="#666"/>
+                    <circle cx="40" cy="35" r="5" fill="#666"/>
+                    <circle cx="0" cy="35" r="5" fill="#666"/>
+                    <circle cx="-40" cy="35" r="5" fill="#666"/>
+                </g>
+                
+                <!-- СТОЛ 6 (2 места) -->
+                <g class="svg-table" data-id="6" transform="translate(750, 150)" onclick="selectTableDirectly(6, '6')">
+                    <circle cx="0" cy="0" r="25" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="0" y="5" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">6</text>
+                    <circle cx="-18" cy="-18" r="5" fill="#666"/>
+                    <circle cx="18" cy="18" r="5" fill="#666"/>
+                </g>
+                
+                <!-- СТОЛ 7 (2 места) -->
+                <g class="svg-table" data-id="7" transform="translate(750, 250)" onclick="selectTableDirectly(7, '7')">
+                    <circle cx="0" cy="0" r="25" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="0" y="5" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">7</text>
+                    <circle cx="-18" cy="-18" r="5" fill="#666"/>
+                    <circle cx="18" cy="18" r="5" fill="#666"/>
+                </g>
+                
+                <!-- СТОЛ 8 (4 места) -->
+                <g class="svg-table" data-id="8" transform="translate(300, 400)" onclick="selectTableDirectly(8, '8')">
+                    <rect x="-30" y="-30" width="60" height="60" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="0" y="5" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">8</text>
+                    <circle cx="-30" cy="-30" r="5" fill="#666"/>
+                    <circle cx="30" cy="-30" r="5" fill="#666"/>
+                    <circle cx="30" cy="30" r="5" fill="#666"/>
+                    <circle cx="-30" cy="30" r="5" fill="#666"/>
+                </g>
+                
+                <!-- СТОЛ 9 (4 места) -->
+                <g class="svg-table" data-id="9" transform="translate(450, 400)" onclick="selectTableDirectly(9, '9')">
+                    <rect x="-30" y="-30" width="60" height="60" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="0" y="5" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">9</text>
+                    <circle cx="-30" cy="-30" r="5" fill="#666"/>
+                    <circle cx="30" cy="-30" r="5" fill="#666"/>
+                    <circle cx="30" cy="30" r="5" fill="#666"/>
+                    <circle cx="-30" cy="30" r="5" fill="#666"/>
+                </g>
+                
+                <!-- СТОЛ 10 (6 мест) -->
+                <g class="svg-table" data-id="10" transform="translate(650, 400)" onclick="selectTableDirectly(10, '10')">
+                    <rect x="-40" y="-35" width="80" height="70" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="0" y="5" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">10</text>
+                    <circle cx="-40" cy="-35" r="5" fill="#666"/>
+                    <circle cx="0" cy="-35" r="5" fill="#666"/>
+                    <circle cx="40" cy="-35" r="5" fill="#666"/>
+                    <circle cx="40" cy="35" r="5" fill="#666"/>
+                    <circle cx="0" cy="35" r="5" fill="#666"/>
+                    <circle cx="-40" cy="35" r="5" fill="#666"/>
+                </g>
+                
+                <!--  СТОЛ 11 (6 мест) -->
+                <g class="svg-table" data-id="11" transform="translate(850, 300)" onclick="selectTableDirectly(11, ' 11')">
+                    <rect x="-45" y="-40" width="90" height="80" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.3)" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="0" y="5" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">11</text>
+                    <circle cx="-45" cy="-40" r="5" fill="#666"/>
+                    <circle cx="0" cy="-40" r="5" fill="#666"/>
+                    <circle cx="45" cy="-40" r="5" fill="#666"/>
+                    <circle cx="45" cy="40" r="5" fill="#666"/>
+                    <circle cx="0" cy="40" r="5" fill="#666"/>
+                    <circle cx="-45" cy="40" r="5" fill="#666"/>
+                </g>
+                
+                <!-- СТОЛ 12 (4 места) -->
+                <g class="svg-table" data-id="12" transform="translate(700, 500)" onclick="selectTableDirectly(12, '12')">
+                    <rect x="-30" y="-30" width="60" height="60" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="0" y="5" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">12</text>
+                    <circle cx="-30" cy="-30" r="5" fill="#666"/>
+                    <circle cx="30" cy="-30" r="5" fill="#666"/>
+                    <circle cx="30" cy="30" r="5" fill="#666"/>
+                    <circle cx="-30" cy="30" r="5" fill="#666"/>
+                </g>
+                
+            </svg>
+        </div>
+
+        
+
         <div class="reservation-wrapper">
+            <!-- Форма бронирования -->
             <div class="reservation-form-wrapper">
                 {% if messages %}
                 <div class="messages">
                     {% for message in messages %}
-                    <div class="alert alert--{{ message.tags }}">
-                        {{ message }}
-                    </div>
+                    <div class="alert alert--{{ message.tags }}">{{ message }}</div>
                     {% endfor %}
                 </div>
                 {% endif %}
+
+                <!-- Инфо о выбранном столе (скрыто по умолчанию) -->
+                <div id="selected-table-info" style="display: none; background: rgba(21, 128, 61, 0.1); border: 2px solid var(--clr-primary); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <span style="color: var(--clr-muted); font-size: 0.9rem;"> Выбран стол:</span>
+                            <div id="table-number-display" style="font-size: 1.3rem; font-weight: 700; color: var(--clr-primary);">№ —</div>
+                        </div>
+                        <div>
+                            <span style="color: var(--clr-muted); font-size: 0.9rem;">🕐 Время:</span>
+                            <div id="time-slot-display" style="font-size: 1.3rem; font-weight: 700; color: var(--clr-accent);">—</div>
+                        </div>
+                        <div>
+                            <span style="color: var(--clr-muted); font-size: 0.9rem;">📅 Дата:</span>
+                            <div id="date-display" style="font-size: 1.3rem; font-weight: 700; color: var(--clr-text);">—</div>
+                        </div>
+                    </div>
+                </div>
 
                 <form method="post" class="reservation-form" action="{% url 'core:reservation' %}">
                     {% csrf_token %}
                     
                     <div class="form-group">
                         <label for="name" class="form-label">Ваше имя *</label>
-                        <input 
-                            type="text" 
-                            id="name" 
-                            name="name" 
-                            class="form-input" 
-                            placeholder="Иван Иванов"
-                            required
-                        >
+                        <input type="text" id="name" name="name" class="form-input" placeholder="Иван Иванов" required>
                     </div>
 
                     <div class="form-group">
                         <label for="phone" class="form-label">Телефон *</label>
-                        <input 
-                            type="tel" 
-                            id="phone" 
-                            name="phone" 
-                            class="form-input" 
-                            placeholder="+7 (999) 999-99-99"
-                            required
-                        >
+                        <input type="tel" id="phone" name="phone" class="form-input" placeholder="+7 (999) 999-99-99" required>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="date" class="form-label">Дата *</label>
+                            <label class="form-label">Дата *</label>
                             <details class="date-picker" data-date-picker>
                                 <summary class="date-picker__trigger">
                                     <span class="date-picker__value is-placeholder">Выберите дату</span>
@@ -67,13 +215,7 @@
                                         <button type="button" class="date-picker__nav" data-date-next aria-label="Следующий месяц">›</button>
                                     </div>
                                     <div class="date-picker__weekdays">
-                                        <span>Пн</span>
-                                        <span>Вт</span>
-                                        <span>Ср</span>
-                                        <span>Чт</span>
-                                        <span>Пт</span>
-                                        <span>Сб</span>
-                                        <span>Вс</span>
+                                        <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
                                     </div>
                                     <div class="date-picker__grid" data-date-grid></div>
                                 </div>
@@ -84,30 +226,22 @@
                             <label class="form-label">Время *</label>
                             <details class="time-picker">
                                 <summary class="time-picker__trigger">
-                                    <span class="time-picker__value">Выберите время</span>
+                                    <span class="time-picker__value is-placeholder">Выберите время</span>
                                     <span class="time-picker__icon" aria-hidden="true">⌄</span>
                                 </summary>
-                                <div class="time-picker__dropdown" role="listbox" aria-label="Выберите время">
-                                    <input class="time-picker__radio" type="radio" id="time-12" name="time" value="12:00" required>
-                                    <label class="time-picker__option" for="time-12">12:00</label>
-
-                                    <input class="time-picker__radio" type="radio" id="time-13" name="time" value="13:00">
-                                    <label class="time-picker__option" for="time-13">13:00</label>
-
+                                <div class="time-picker__dropdown" role="listbox">
+                                    <input class="time-picker__radio" type="radio" id="time-10" name="time" value="10:00" required>
+                                    <label class="time-picker__option" for="time-10">10:00-12:00</label>
+                                    <input class="time-picker__radio" type="radio" id="time-12" name="time" value="12:00">
+                                    <label class="time-picker__option" for="time-12">12:00-14:00</label>
                                     <input class="time-picker__radio" type="radio" id="time-14" name="time" value="14:00">
-                                    <label class="time-picker__option" for="time-14">14:00</label>
-
+                                    <label class="time-picker__option" for="time-14">14:00-16:00</label>
+                                    <input class="time-picker__radio" type="radio" id="time-16" name="time" value="16:00">
+                                    <label class="time-picker__option" for="time-16">16:00-18:00</label>
                                     <input class="time-picker__radio" type="radio" id="time-18" name="time" value="18:00">
-                                    <label class="time-picker__option" for="time-18">18:00</label>
-
-                                    <input class="time-picker__radio" type="radio" id="time-19" name="time" value="19:00">
-                                    <label class="time-picker__option" for="time-19">19:00</label>
-
+                                    <label class="time-picker__option" for="time-18">18:00-20:00</label>
                                     <input class="time-picker__radio" type="radio" id="time-20" name="time" value="20:00">
-                                    <label class="time-picker__option" for="time-20">20:00</label>
-
-                                    <input class="time-picker__radio" type="radio" id="time-21" name="time" value="21:00">
-                                    <label class="time-picker__option" for="time-21">21:00</label>
+                                    <label class="time-picker__option" for="time-20">20:00-22:00</label>
                                 </div>
                             </details>
                         </div>
@@ -125,18 +259,19 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn--primary btn--large">
-                        Забронировать стол
-                    </button>
+                    <!-- Скрытое поле для стола -->
+                    <input type="hidden" id="selected-table" name="table">
 
-                    
+                    <button type="submit" class="btn btn--primary btn--large">Забронировать стол</button>
+                    <p class="form-note">* Обязательные поля для заполнения</p>
                 </form>
             </div>
 
+            <!-- Инфо блок с телефоном -->
             <div class="reservation-info">
                 <h3>Или позвоните нам</h3>
-                <a href="tel:+79991234567" class="reservation-phone">+7 (999) 975-11-66</a>
-                <p class="reservation-hours">🕐 Ежедневно с 12:00 до 23:00</p>
+                <a href="tel:+79999751166" class="reservation-phone">+7 (999) 975-11-66</a>
+                <p class="reservation-hours">🕐 Ежедневно с 12:00 до 22:00</p>
                 <p class="reservation-note">
                     Для бронирования столов более чем на 8 человек, 
                     пожалуйста, свяжитесь с нами по телефону.
@@ -145,4 +280,197 @@
         </div>
     </div>
 </section>
+
+<!-- ПОПАП С ТАЙМИНГАМИ (Всплывающее окно) -->
+<div id="table-popup" class="table-popup">
+    <button class="popup-close" onclick="closePopup()">×</button>
+    <h3 class="popup-title" id="popup-title">Стол №</h3>
+    
+    <div class="popup-date-nav">
+        <button onclick="changeDate(-1)">‹</button>
+        <span id="popup-date-display">Сегодня</span>
+        <button onclick="changeDate(1)">›</button>
+    </div>
+
+    <div class="popup-slots" id="popup-slots"></div>
+    
+    <button id="select-table-btn" class="btn btn--primary" style="display: none; width: 100%; margin-top: 1rem;" onclick="selectTableFromPopup()">
+        Выбрать этот стол
+    </button>
+</div>
+
+<!-- JS для работы схемы и формы -->
+<script>
+    // Глобальные переменные
+    let currentTableId = null;
+    let selectedSlotTime = null;
+    let currentDate = new Date().toISOString().split('T')[0];
+
+    // --- ФУНКЦИИ ДЛЯ ПОПАПА ---
+    function openPopup(id, number) {
+        currentTableId = id;
+        document.getElementById('popup-title').textContent = `Стол №${number}`;
+        document.getElementById('table-popup').style.display = 'block';
+        loadSlots();
+    }
+
+    function closePopup() {
+        document.getElementById('table-popup').style.display = 'none';
+        currentTableId = null;
+        selectedSlotTime = null;
+        document.getElementById('select-table-btn').style.display = 'none';
+    }
+
+    function changeDate(days) {
+        let d = new Date(currentDate);
+        d.setDate(d.getDate() + days);
+        currentDate = d.toISOString().split('T')[0];
+        loadSlots();
+    }
+
+    async function loadSlots() {
+        const container = document.getElementById('popup-slots');
+        document.getElementById('popup-date-display').textContent = new Date(currentDate).toLocaleDateString('ru-RU');
+        container.innerHTML = '<div style="grid-column:1/-1; text-align:center;">Загрузка...</div>';
+        
+        try {
+            const res = await fetch(`/api/slots/?table=${currentTableId}&date=${currentDate}`);
+            const slots = await res.json();
+            container.innerHTML = '';
+            
+            slots.forEach(s => {
+                const btn = document.createElement('button');
+                btn.className = `slot-btn ${s.is_busy ? 'busy' : 'free'}`;
+                btn.textContent = s.time; // Например "10:00-12:00"
+                if (!s.is_busy) {
+                    btn.onclick = () => {
+                        document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                        // Берем время начала (первые 5 символов: "10:00")
+                        selectedSlotTime = s.time.substring(0, 5); 
+                        document.getElementById('select-table-btn').style.display = 'block';
+                    };
+                }
+                container.appendChild(btn);
+            });
+        } catch(e) {
+            container.innerHTML = 'Ошибка';
+        }
+    }
+
+    // --- ФУНКЦИИ ДЛЯ ФОРМЫ ---
+    function selectTableDirectly(id, number) {
+        // Прямой клик по SVG вызывает попап
+        openPopup(id, number);
+    }
+
+    function selectTableFromPopup() {
+        if (!currentTableId || !selectedSlotTime) return;
+
+        const tableNum = document.getElementById('popup-title').textContent.replace('Стол №', '');
+        
+        // 1. Показываем инфо-блок
+        const infoBlock = document.getElementById('selected-table-info');
+        infoBlock.style.display = 'block';
+        
+        // 2. Заполняем данные визуально
+        document.getElementById('table-number-display').textContent = `№ ${tableNum}`;
+        document.getElementById('time-slot-display').textContent = selectedSlotTime;
+        document.getElementById('date-display').textContent = new Date(currentDate).toLocaleDateString('ru-RU');
+        
+        // 3. Заполняем скрытые поля формы
+        document.getElementById('selected-table').value = currentTableId;
+        
+        // Дата
+        const hiddenDateInput = document.querySelector('#date');
+        if(hiddenDateInput) hiddenDateInput.value = currentDate;
+        const dateDisplay = document.querySelector('.date-picker__value');
+        if(dateDisplay) {
+            dateDisplay.textContent = new Date(currentDate).toLocaleDateString('ru-RU');
+            dateDisplay.classList.remove('is-placeholder');
+        }
+        
+        // Время
+        const timeRadio = document.querySelector(`input[name="time"][value="${selectedSlotTime}"]`);
+        if (timeRadio) {
+            timeRadio.checked = true;
+            const timeDisplay = document.querySelector('.time-picker__value');
+            if(timeDisplay) {
+                timeDisplay.textContent = selectedSlotTime;
+                timeDisplay.classList.remove('is-placeholder');
+            }
+            document.querySelector('.time-picker').open = false; // Закрыть пикер
+        }
+        
+        closePopup();
+        
+        // 4. Скролл к форме
+        const formWrapper = document.querySelector('.reservation-form-wrapper');
+        if (formWrapper) {
+            formWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    // Инициализация пикера даты (стандартный скрипт Django)
+    document.addEventListener('DOMContentLoaded', () => {
+        const datePicker = document.querySelector('[data-date-picker]');
+        if (datePicker) {
+            const hiddenInput = datePicker.querySelector('input[name="date"]');
+            const valueLabel = datePicker.querySelector('.date-picker__value');
+            const monthLabel = datePicker.querySelector('[data-date-month]');
+            const grid = datePicker.querySelector('[data-date-grid]');
+            const prevButton = datePicker.querySelector('[data-date-prev]');
+            const nextButton = datePicker.querySelector('[data-date-next]');
+
+            const monthNames = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
+            const today = new Date(); today.setHours(0,0,0,0);
+            let currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            function getStartOfMonth(date) { return new Date(date.getFullYear(), date.getMonth(), 1); }
+            function toIsoDate(date) { return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; }
+            function formatLabel(date) { return date.toLocaleDateString('ru-RU', {day:'2-digit', month:'long', year:'numeric'}); }
+            function isSameDate(l, r) { return l.getFullYear()===r.getFullYear() && l.getMonth()===r.getMonth() && l.getDate()===r.getDate(); }
+
+            function renderCalendar() {
+                const year = currentMonth.getFullYear(); const month = currentMonth.getMonth();
+                const firstDay = new Date(year, month, 1); const daysInMonth = new Date(year, month+1, 0).getDate();
+                const leadingEmpty = (firstDay.getDay() + 6) % 7;
+
+                monthLabel.textContent = `${monthNames[month]} ${year}`;
+                grid.innerHTML = '';
+
+                for (let i = 0; i < leadingEmpty; i++) {
+                    const emptyCell = document.createElement('button');
+                    emptyCell.type = 'button'; emptyCell.className = 'date-picker__day is-empty'; emptyCell.disabled = true;
+                    grid.appendChild(emptyCell);
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(year, month, day); date.setHours(0,0,0,0);
+                    const button = document.createElement('button');
+                    button.type = 'button'; button.className = 'date-picker__day'; button.textContent = String(day); button.dataset.date = toIsoDate(date);
+                    if (date < today) { button.classList.add('is-disabled'); button.disabled = true; }
+                    if (isSameDate(date, today)) button.classList.add('is-today');
+                    if (hiddenInput.value === button.dataset.date) button.classList.add('is-selected');
+
+                    button.addEventListener('click', () => {
+                        if (button.disabled) return;
+                        hiddenInput.value = button.dataset.date;
+                        valueLabel.textContent = formatLabel(date);
+                        valueLabel.classList.remove('is-placeholder');
+                        datePicker.open = false;
+                        renderCalendar();
+                    });
+                    grid.appendChild(button);
+                }
+                prevButton.disabled = currentMonth <= new Date(today.getFullYear(), today.getMonth(), 1);
+            }
+
+            datePicker.addEventListener('toggle', () => { if(datePicker.open) renderCalendar(); });
+            prevButton.addEventListener('click', () => { if(!prevButton.disabled) { currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth()-1, 1); renderCalendar(); } });
+            nextButton.addEventListener('click', () => { currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth()+1, 1); renderCalendar(); });
+            renderCalendar();
+        }
+    });
+</script>
 {% endblock %}

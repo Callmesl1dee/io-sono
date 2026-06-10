@@ -19,4 +19,10 @@ urlpatterns = [
     path('loyalty/', views.loyalty, name='loyalty'),
     
     path('receipt/<int:reservation_id>/', views.download_receipt, name='receipt'),
+    
+    path('hall/', views.hall_view, name='hall'),
+    path('api/tables/', views.api_tables, name='api_tables'),
+    path('api/slots/', views.api_slots, name='api_slots'),
+    
+    path('init-hall/', views.init_hall_tables, name='init_hall'),
 ]

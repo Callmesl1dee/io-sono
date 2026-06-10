@@ -69,10 +69,27 @@ a { text-decoration: none; color: inherit; }
 .hero__label { display: block; color: var(--clr-primary); text-transform: uppercase; letter-spacing: 0.25em; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; }
 .hero__title { font-family: var(--font-serif); font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1.1; margin-bottom: 1.5rem; }
 .hero__desc { font-size: clamp(1rem, 2vw, 1.25rem); color: var(--clr-muted); margin-bottom: 2.5rem; max-width: 500px; }
-.hero__buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+.hero__buttons { 
+    display: flex; 
+    gap: 1.5rem; 
+    align-items: center;
+    flex-wrap: wrap;
+}
 
 /* === BUTTONS === */
-.btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.9rem 2rem; border-radius: 50px; font-weight: 600; transition: var(--transition); cursor: pointer; border: none; font-size: 1rem; }
+.btn { 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 1.1rem 2.5rem; 
+    border-radius: 50px; 
+    font-weight: 600; 
+    transition: var(--transition); 
+    cursor: pointer; 
+    border: none; 
+    font-size: 1.1rem;
+    min-width: 240px;
+}
 .btn--primary { background: var(--clr-primary); color: #fff; }
 .btn--primary:hover { background: var(--clr-primary-hover); box-shadow: 0 8px 20px rgba(21, 128, 61, 0.3); }
 .btn--outline { border: 2px solid var(--clr-accent); color: var(--clr-accent); background: transparent; }
@@ -150,13 +167,38 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* === CTA SECTION === */
-.cta-section { background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-hover) 100%); }
-.cta-box { text-align: center; padding: 3rem; }
-.cta-box__title { font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1rem; }
-.cta-box__text { font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.9; }
-.cta-box__buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-.cta-box .btn--outline { border-color: #fff; color: #fff; }
-.cta-box .btn--outline:hover { background: #fff; color: var(--clr-primary); }
+.cta-section { 
+    background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-hover) 100%); 
+}
+.cta-box { 
+    text-align: center; 
+    padding: 3rem; 
+}
+.cta-box__title { 
+    font-family: var(--font-serif); 
+    font-size: clamp(2rem, 4vw, 3rem); 
+    margin-bottom: 1rem; 
+}
+.cta-box__text { 
+    font-size: 1.1rem; 
+    margin-bottom: 2rem; 
+    opacity: 0.9; 
+}
+.cta-box__buttons { 
+    display: flex; 
+    gap: 2rem; 
+    justify-content: center; 
+    align-items: center;
+    flex-wrap: wrap;
+}
+.cta-box .btn--outline { 
+    border-color: #fff; 
+    color: #fff; 
+}
+.cta-box .btn--outline:hover { 
+    background: #fff; 
+    color: var(--clr-primary); 
+}
 
 /* === PAGE HEADER === */
 .page-header {
@@ -411,13 +453,10 @@ a { text-decoration: none; color: inherit; }
 
 /* === КАСТОМНЫЕ ПИКЕРЫ (Дата + Время) === */
 .date-picker, .time-picker { position: relative; width: 100%; }
-
-/* Скрываем стандартный маркер <details> */
 .date-picker > summary, .time-picker > summary { list-style: none; }
 .date-picker > summary::-webkit-details-marker,
 .time-picker > summary::-webkit-details-marker { display: none; }
 
-/* Триггеры (кнопки открытия) */
 .date-picker__trigger, .time-picker__trigger {
     width: 100%;
     min-height: 58px;
@@ -471,17 +510,58 @@ a { text-decoration: none; color: inherit; }
     transform: rotate(180deg);
 }
 
-/* Панели выпадающего списка */
-.date-picker__panel, .time-picker__dropdown {
-    margin-top: 0.75rem;
+/* === ИСПРАВЛЕНИЕ: ПИКЕРЫ ПОВЕРХ КОНТЕНТА === */
+
+/* Родитель должен быть relative */
+.date-picker, 
+.time-picker { 
+    position: relative; 
+    width: 100%; 
+}
+
+/* Панель даты */
+.date-picker__panel {
+    position: absolute;
+    top: 110%; /* Чуть ниже инпута */
+    left: 0;
+    z-index: 100; /* Поверх всего */
+    width: 300px; /* Фиксированная ширина */
+    margin-top: 0.5rem;
     padding: 1rem;
     background: var(--clr-surface);
     border: 2px solid var(--clr-primary);
     border-radius: 14px;
-    box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.6);
     backdrop-filter: blur(8px);
-    z-index: 50;
-    animation: fadeIn 0.2s ease;
+    display: none; /* Скрыто по умолчанию */
+}
+
+.date-picker[open] .date-picker__panel {
+    display: block; /* Показываем, когда открыто */
+}
+
+/* Панель времени */
+.time-picker__dropdown {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    z-index: 100;
+    width: 200px;
+    max-height: 250px;
+    overflow-y: auto;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--clr-surface);
+    border: 2px solid var(--clr-primary);
+    border-radius: 14px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.6);
+    display: none;
+}
+
+.time-picker[open] .time-picker__dropdown {
+    display: grid; /* Показываем */
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
 }
 
 @keyframes fadeIn {
@@ -633,7 +713,6 @@ a { text-decoration: none; color: inherit; }
     box-shadow: 0 0 20px rgba(21, 128, 61, 0.3);
 }
 
-/* Кастомный скроллбар */
 .time-picker__dropdown::-webkit-scrollbar { width: 6px; }
 .time-picker__dropdown::-webkit-scrollbar-track { background: var(--clr-bg); border-radius: 3px; }
 .time-picker__dropdown::-webkit-scrollbar-thumb { background: var(--clr-primary); border-radius: 3px; }
@@ -645,7 +724,7 @@ a { text-decoration: none; color: inherit; }
 
 .reservation-wrapper {
     display: grid;
-    grid-template-columns: 1.8fr 1fr;
+    grid-template-columns: 1.5fr 1fr;
     gap: 3rem;
     align-items: start;
 }
@@ -750,14 +829,15 @@ a { text-decoration: none; color: inherit; }
     color: #f87171;
 }
 
+/* === ИСПРАВЛЕНО: Блок с телефоном НЕ липкий === */
 .reservation-info {
     background: var(--clr-surface);
     padding: 2.5rem;
     border-radius: var(--radius);
     border: 1px solid rgba(255,255,255,0.05);
-    position: sticky;
-    top: 100px;
-    min-width: 320px;
+    
+    /* УБРАНО: position: sticky - теперь блок стоит на месте */
+    position: relative;
 }
 
 .reservation-phone {
@@ -795,7 +875,6 @@ a { text-decoration: none; color: inherit; }
 /* === RESPONSIVE === */
 @media (max-width: 1100px) {
     .reservation-wrapper { grid-template-columns: 1fr; gap: 2rem; }
-    .reservation-info { position: static; min-width: auto; }
 }
 
 @media (min-width: 1400px) {
@@ -815,10 +894,17 @@ a { text-decoration: none; color: inherit; }
     .hero__buttons { flex-direction: column; width: 100%; }
     .btn { width: 100%; }
     .about-grid { grid-template-columns: 1fr; gap: 2rem; }
-    .cta-box__buttons { flex-direction: column; }
+    .cta-box__buttons { 
+        flex-direction: column; 
+        width: 100%;
+        gap: 1rem;
+    }
+    .cta-box__buttons .btn {
+        width: 100%;
+        max-width: 300px;
+    }
     .bar-grid, .kids-grid { grid-template-columns: 1fr; }
     
-    /* Мобильные пикеры - шторка снизу */
     .date-picker__panel, .time-picker__dropdown {
         position: fixed;
         bottom: 0; left: 0; right: 0;
@@ -888,10 +974,9 @@ a { text-decoration: none; color: inherit; }
     padding-bottom: 1.5rem;
 }
 
-/* === ОБНОВЛЁННЫЙ ПРОФИЛЬ === */
 .profile-name {
     font-family: var(--font-serif);
-    font-size: 2rem; /* Было 2.5rem - уменьшили */
+    font-size: 2rem;
     margin-bottom: 0.25rem;
 }
 
@@ -1032,7 +1117,6 @@ a { text-decoration: none; color: inherit; }
     margin: 0.5rem 0;
 }
 
-/* Адаптив для мобильных */
 @media (max-width: 768px) {
     .user-menu__dropdown {
         position: fixed;
@@ -1042,130 +1126,6 @@ a { text-decoration: none; color: inherit; }
         right: 1rem;
         min-width: auto;
     }
-}
-
-/* === MODAL (POPUP) === */
-.modal-overlay {
-    display: none; /* Скрыто по умолчанию */
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(5px);
-    z-index: 2000;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.modal-overlay.active {
-    display: flex;
-    opacity: 1;
-}
-
-.modal-content {
-    background: var(--clr-surface);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px;
-    width: 100%;
-    max-width: 800px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    animation: modalSlideUp 0.3s ease;
-}
-
-@keyframes modalSlideUp {
-    from { transform: translateY(50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.modal-close {
-    position: absolute;
-    top: 15px; right: 15px;
-    background: rgba(0,0,0,0.5);
-    border: none;
-    color: white;
-    font-size: 2rem;
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition);
-}
-
-.modal-close:hover { background: var(--clr-primary); }
-
-.modal-image {
-    width: 100%;
-    height: 300px;
-    background: #222;
-    overflow: hidden;
-}
-
-.modal-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.modal-body {
-    padding: 2rem;
-}
-
-.modal-category {
-    color: var(--clr-primary);
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-}
-
-.modal-title {
-    font-family: var(--font-serif);
-    font-size: 2rem;
-    margin: 0.5rem 0 1rem;
-}
-
-.modal-desc {
-    color: var(--clr-muted);
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin-bottom: 2rem;
-}
-
-.modal-tags {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.modal-tags span {
-    background: rgba(255,255,255,0.05);
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    color: var(--clr-text);
-}
-
-.modal-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    padding-top: 1.5rem;
-}
-
-.modal-price {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--clr-accent);
 }
 
 /* === MODAL (POPUP) === */
@@ -1292,12 +1252,10 @@ a { text-decoration: none; color: inherit; }
     color: var(--clr-accent);
 }
 
-/* Курсор для кликабельных карточек */
 .dish-clickable {
     cursor: pointer;
 }
 
-/* Placeholder для фото */
 .bar-item__img--placeholder {
     background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
     display: flex;
@@ -1312,8 +1270,6 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* === УЛУЧШЕННЫЙ ПРОФИЛЬ И ЛОЯЛЬНОСТЬ === */
-
-/* Контейнер профиля */
 .profile-container {
     max-width: 900px;
     margin: 3rem auto;
@@ -1321,7 +1277,6 @@ a { text-decoration: none; color: inherit; }
     text-align: center;
 }
 
-/* Карточка лояльности */
 .loyalty-card {
     max-width: 400px;
     margin: 0 auto 2rem;
@@ -1357,7 +1312,6 @@ a { text-decoration: none; color: inherit; }
     letter-spacing: 1px;
 }
 
-/* Реферальный блок */
 .referral-box {
     max-width: 400px;
     margin: 2rem auto;
@@ -1386,7 +1340,6 @@ a { text-decoration: none; color: inherit; }
     padding: 0.5rem;
 }
 
-/* Заголовки секций */
 .section-title {
     font-size: 2.5rem;
     font-family: var(--font-serif);
@@ -1394,7 +1347,6 @@ a { text-decoration: none; color: inherit; }
     text-align: center;
 }
 
-/* Список бронирований */
 .reservations-list {
     max-width: 700px;
     margin: 0 auto;
@@ -1435,13 +1387,11 @@ a { text-decoration: none; color: inherit; }
     gap: 0.5rem;
 }
 
-/* Кнопки */
 .btn-ghost {
     font-size: 1rem;
     padding: 0.75rem 1.5rem;
 }
 
-/* Пустое состояние */
 .empty-state {
     text-align: center;
     padding: 4rem 2rem;
@@ -1460,7 +1410,6 @@ a { text-decoration: none; color: inherit; }
     padding: 1rem 2.5rem;
 }
 
-/* Страница лояльности */
 .loyalty-page {
     max-width: 800px;
     margin: 4rem auto;
@@ -1509,7 +1458,6 @@ a { text-decoration: none; color: inherit; }
     gap: 1rem;
 }
 
-/* Кнопка возврата */
 .btn--outline {
     display: inline-block;
     margin: 2rem auto;
@@ -1517,7 +1465,6 @@ a { text-decoration: none; color: inherit; }
     padding: 1rem 2rem;
 }
 
-/* Адаптив для мобильных */
 @media (max-width: 768px) {
     .profile-container {
         padding: 1rem;
@@ -1542,92 +1489,13 @@ a { text-decoration: none; color: inherit; }
     }
 }
 
-/* === КНОПКА КОПИРОВАНИЯ РЕФЕРАЛЬНОГО КОДА === */
-.referral-code-box {
-    display: flex;
-    align-items: center;
-    background: rgba(21, 128, 61, 0.1);
-    border: 2px solid var(--clr-primary);
-    border-radius: 12px;
-    padding: 0.5rem;
-    margin: 1.5rem auto 0;
-    max-width: 350px;
-    gap: 1rem;
-}
-
-.referral-code-box code {
-    flex: 1;
-    background: transparent;
-    color: var(--clr-primary);
-    font-family: 'Courier New', monospace;
-    font-size: 1.2rem;
-    font-weight: 700;
-    padding: 0.5rem 1rem;
-    border: none;
-    text-align: center;
-}
-
-.btn-copy {
-    background: var(--clr-primary);
-    border: none;
-    color: white;
-    padding: 0.75rem 1.25rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    white-space: nowrap;
-}
-
-.btn-copy:hover {
-    background: var(--clr-primary-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(21, 128, 61, 0.4);
-}
-
-.btn-copy:active {
-    transform: translateY(0);
-}
-
-.btn-copy.copied {
-    background: #10b981;
-    color: white;
-}
-
-.btn-copy.copied:hover {
-    background: #059669;
-}
-
-/* Иконка копирования */
-.btn-copy svg {
-    width: 20px;
-    height: 20px;
-}
-
-/* Адаптив для мобильных */
-@media (max-width: 768px) {
-    .referral-code-box {
-        flex-direction: column;
-        max-width: 300px;
-    }
-    
-    .btn-copy {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
 /* === TOAST УВЕДОМЛЕНИЕ === */
 .copy-toast {
     position: fixed;
     top: 24px;
     left: 50%;
     transform: translateX(-50%) translateY(-20px);
-    background: #10b981; /* Зелёный */
+    background: #10b981;
     color: #fff;
     padding: 12px 24px;
     border-radius: 10px;
@@ -1647,7 +1515,6 @@ a { text-decoration: none; color: inherit; }
     transform: translateX(-50%) translateY(0);
 }
 
-/* === КНОПКА КОПИРОВАНИЯ (СТАТИЧНАЯ) === */
 .btn-copy {
     background: var(--clr-primary);
     border: none;
@@ -1695,4 +1562,312 @@ a { text-decoration: none; color: inherit; }
     border: none;
     text-align: center;
     letter-spacing: 0.5px;
+}
+
+/* === ИСПРАВЛЕНИЯ ГЛАВНОЙ СТРАНИЦЫ === */
+
+/* Телефон сдвигаем вправо */
+.cta-box__buttons {
+    justify-content: center;
+    gap: 3rem;
+}
+
+/* Убираем кнопку "Наше меню" */
+.about-section .btn--outline,
+.section:has(.section__title:contains("Популярные блюда")) .btn--primary {
+    display: none !important;
+}
+
+/* Или просто скрываем по классу, если есть */
+.menu-preview__footer .btn--primary {
+    display: none !important;
+}
+
+/* === ФИКС КНОПОК В ЗЕЛЁНОМ БЛОКЕ === */
+.cta-section .cta-box__buttons {
+    display: flex !important;
+    flex-direction: row !important; /* Принудительно в ряд */
+    justify-content: center !important; /* По центру */
+    align-items: center !important;
+    gap: 2rem !important; /* Отступ между кнопками */
+    flex-wrap: wrap;
+}
+
+.cta-section .cta-box__buttons .btn {
+    margin: 0 !important; /* Убираем лишние отступы */
+    min-width: 220px; /* Фиксируем размер */
+}
+
+/* === HALL MAP: SKELETON STYLE === */
+.hall-map-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    aspect-ratio: 16/10; /* Под твой план */
+    margin: 2rem auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.hall-map-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('/static/images/hall-plan.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #0f0f0f; /* Фон под картинкой */
+}
+
+.tables-layer {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+}
+
+/* Кнопка-скелет поверх стола */
+.table-skeleton {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: rgba(255,255,255,0.05);
+    border: 2px dashed rgba(255,255,255,0.3);
+    border-radius: 8px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    transition: all 0.25s ease;
+    z-index: 10;
+    backdrop-filter: blur(2px);
+}
+
+.table-skeleton:hover {
+    background: rgba(21, 128, 61, 0.2);
+    border-color: var(--clr-primary);
+    border-style: solid;
+    transform: translate(-50%, -50%) scale(1.15);
+    box-shadow: 0 0 15px rgba(21, 128, 61, 0.3);
+}
+
+.table-skeleton.busy {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #ef4444;
+    cursor: not-allowed;
+}
+
+.table-skeleton.selected {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: var(--clr-accent);
+    border-style: solid;
+    transform: translate(-50%, -50%) scale(1.2);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+}
+
+/* Попап */
+.table-popup {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--clr-surface);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    z-index: 1000;
+    width: 320px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+}
+
+.popup-close {
+    position: absolute; top: 10px; right: 10px;
+    background: none; border: none; color: var(--clr-muted);
+    font-size: 1.5rem; cursor: pointer;
+}
+
+.popup-title { font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 1rem; text-align: center; }
+
+.popup-date-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1rem; background: rgba(255,255,255,0.05);
+    padding: 0.5rem; border-radius: 8px;
+}
+
+.popup-date-nav button {
+    background: var(--clr-primary); border: none; color: white;
+    width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+}
+
+#popup-date-display { font-weight: 600; }
+
+.popup-slots {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+    max-height: 220px; overflow-y: auto; margin-bottom: 1rem;
+}
+
+.slot-btn {
+    padding: 0.6rem; border: 2px solid; border-radius: 8px;
+    background: transparent; cursor: pointer; font-weight: 600;
+    font-size: 0.85rem; transition: all 0.2s;
+}
+
+.slot-btn.free { border-color: var(--clr-primary); color: var(--clr-primary); }
+.slot-btn.free:hover, .slot-btn.selected { background: var(--clr-primary); color: white; }
+.slot-btn.busy {
+    border-color: #ef4444; color: #ef4444;
+    background: rgba(239, 68, 68, 0.1); cursor: not-allowed;
+    text-decoration: line-through; opacity: 0.7;
+}
+
+#book-now-btn { display: none; width: 100%; }
+
+/* === 404 ERROR PAGE === */
+.error-section {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 0;
+}
+
+.error-content {
+    text-align: center;
+    max-width: 600px;
+}
+
+.error-title {
+    font-size: 8rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    line-height: 1;
+}
+
+.error-subtitle {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    margin: 1rem 0;
+    color: var(--clr-text);
+}
+
+.error-text {
+    font-size: 1.2rem;
+    color: var(--clr-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+}
+
+.error-illustration {
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .error-title { font-size: 5rem; }
+    .error-subtitle { font-size: 1.8rem; }
+    .error-actions { flex-direction: column; }
+}
+
+/* Table Popup */
+.table-popup {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--clr-surface);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    z-index: 1000;
+    width: 320px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+}
+
+.popup-close {
+    position: absolute; top: 10px; right: 10px;
+    background: none; border: none; color: var(--clr-muted);
+    font-size: 1.5rem; cursor: pointer;
+}
+
+.popup-title { font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 1rem; text-align: center; }
+
+.popup-date-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1rem; background: rgba(255,255,255,0.05);
+    padding: 0.5rem; border-radius: 8px;
+}
+
+.popup-date-nav button {
+    background: var(--clr-primary); border: none; color: white;
+    width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+}
+
+#popup-date-display { font-weight: 600; }
+
+.popup-slots {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+    max-height: 220px; overflow-y: auto; margin-bottom: 1rem;
+}
+
+.slot-btn {
+    padding: 0.6rem; border: 2px solid; border-radius: 8px;
+    background: transparent; cursor: pointer; font-weight: 600;
+    font-size: 0.85rem; transition: all 0.2s;
+}
+
+.slot-btn.free { border-color: var(--clr-primary); color: var(--clr-primary); }
+.slot-btn.free:hover, .slot-btn.selected { background: var(--clr-primary); color: white; }
+.slot-btn.busy {
+    border-color: #ef4444; color: #ef4444;
+    background: rgba(239, 68, 68, 0.1); cursor: not-allowed;
+    text-decoration: line-through; opacity: 0.7;
+}
+
+.hall-map-svg {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.hall-map-svg svg {
+    width: 100%;
+    height: auto;
+}
+
+.svg-table {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.svg-table:hover rect,
+.svg-table:hover circle {
+    stroke: var(--clr-primary);
+    stroke-width: 3;
+}
+
+.svg-table.active rect,
+.svg-table.active circle {
+    stroke: var(--clr-primary);
+    fill: rgba(21, 128, 61, 0.2);
+}
+
+.svg-table.busy rect,
+.svg-table.busy circle {
+    stroke: #ef4444;
+    opacity: 0.5;
+    cursor: not-allowed;
 }

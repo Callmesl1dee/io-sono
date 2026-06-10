@@ -32,8 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const nextButton = datePicker.querySelector('[data-date-next]');
 
         const monthNames = [
-            'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-            'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+            'январь', 'февраль', 'март', 'апрель', 'май', 'июнь',
+            'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'
         ];
 
         const today = new Date();
@@ -273,3 +273,54 @@ function showToast(element) {
         element.classList.remove('show');
     }, 2000);
 }
+
+// === КЛИК ПО ПОПУЛЯРНЫМ БЛЮДАМ НА ГЛАВНОЙ ===
+document.querySelectorAll('.menu-preview__item').forEach(item => {
+    item.addEventListener('click', function() {
+        const modal = document.getElementById('dish-modal');
+        if (!modal) return;
+        
+        // Элементы модалки
+        const mImgContainer = document.getElementById('modal-img-container');
+        const mImg = document.getElementById('modal-img');
+        const mCategory = document.getElementById('modal-category');
+        const mTitle = document.getElementById('modal-title');
+        const mDesc = document.getElementById('modal-desc');
+        const mPrice = document.getElementById('modal-price');
+        
+        // Берем данные из кликнутого элемента
+        const title = this.dataset.title || '';
+        const desc = this.dataset.desc || '';
+        const price = this.dataset.price || '';
+        const category = this.dataset.category || '';
+        const imgSrc = this.dataset.img || '';
+        
+        // Заполняем модалку
+        mTitle.textContent = title;
+        mDesc.textContent = desc;
+        mPrice.textContent = price ? `${price} ₽` : '';
+        mCategory.textContent = category;
+        
+        if (imgSrc) {
+            mImg.src = imgSrc;
+            mImgContainer.style.display = 'block';
+        } else {
+            mImgContainer.style.display = 'none';
+        }
+        
+        // Показываем
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+});
+
+// Скрываем кнопку "Наше меню" на главной
+document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('.btn--outline, .btn--primary');
+    buttons.forEach(btn => {
+        if (btn.textContent.trim() === 'Наше меню' || 
+            btn.textContent.trim() === 'Смотреть всё меню') {
+            btn.style.display = 'none';
+        }
+    });
+});

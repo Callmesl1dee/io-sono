@@ -5,7 +5,6 @@
 <section class="hero">
     <div class="hero__bg"></div>
     <div class="container hero__content">
-        <span class="hero__label">Итальянская кухня</span>
         <h1 class="hero__title">Настоящий вкус<br><span class="text-accent">Италии</span></h1>
         <p class="hero__desc">Аутентичные рецепты, свежие ингредиенты и атмосфера средиземноморского гостеприимства</p>
         <div class="hero__buttons">
@@ -31,21 +30,21 @@
                     Мы используем только свежие ингредиенты от проверенных поставщиков и готовим с любовью 
                     к каждому блюду.
                 </p>
-                <a href="{% url 'core:menu' %}" class="btn btn--outline">Наше меню</a>
+                <!-- КНОПКА "НАШЕ МЕНЮ" УБРАНА -->
             </div>
             <div class="about__features">
                 <div class="feature-card">
-                    <div class="feature-card__icon">🍝</div>
+                    <div class="feature-card__icon"></div>
                     <h3>Аутентичные рецепты</h3>
                     <p>Традиционные итальянские блюда</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-card__icon">🌿</div>
+                    <div class="feature-card__icon"></div>
                     <h3>Свежие продукты</h3>
                     <p>Только качественные ингредиенты</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-card__icon">🍷</div>
+                    <div class="feature-card__icon"></div>
                     <h3>Уютная атмосфера</h3>
                     <p>Интерьер в итальянском стиле</p>
                 </div>
@@ -54,7 +53,7 @@
     </div>
 </section>
 
-<!-- Menu Preview (без фото) -->
+<!-- Menu Preview (ПОПУЛЯРНЫЕ БЛЮДА С КЛИКАБЕЛЬНОСТЬЮ) -->
 <section id="menu" class="section menu-preview">
     <div class="container">
         <div class="section__header">
@@ -64,7 +63,14 @@
 
         <div class="menu-preview__grid">
             {% for dish in dishes|slice:":4" %}
-            <div class="menu-preview__item">
+            <!-- Добавлены data-атрибуты и класс dish-clickable -->
+            <div class="menu-preview__item dish-clickable" 
+                 data-title="{{ dish.name }}"
+                 data-desc="{{ dish.description }}"
+                 data-price="{{ dish.price }}"
+                 data-category="{{ dish.category.name }}"
+                 data-img="{{ dish.image.url|default:'' }}">
+                
                 <div class="menu-preview__header">
                     <h3>{{ dish.name }}</h3>
                     <span class="menu-preview__price">{{ dish.price }} ₽</span>

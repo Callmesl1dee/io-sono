@@ -86,6 +86,27 @@ class Reservation(models.Model):
     def __str__(self):
         return f"{self.name} | {self.date} {self.time}"
 
+    def clean(self):
+        super().clean()
+        from django.core.exceptions import ValidationError
+        if self.table and self.date and self.time:
+            conflict = Reservation.objects.filter(
+                table=self.table,
+                date=self.date,
+                time=self.time,
+                status__in=['confirmed', 'pending']
+            )
+            if self.pk:
+                conflict = conflict.exclude(pk=self.pk)
+            if conflict.exists():
+                raise ValidationError(
+                    f'Стол №{self.table.number} уже забронирован на выбранное время.'
+                )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 
     
     # === BAR MENU MODELS ===

@@ -109,3 +109,47 @@ class ReservationTests(TestCase):
         
         slot_10 = next(s for s in slots_data if s['time'] == '10:00-12:00')
         self.assertTrue(slot_10['is_busy'])
+
+    def test_tables_status_api(self):
+        """Test that the tables status API returns table as busy only when all slots are booked."""
+        url = reverse('core:api_tables_status')
+        date_str = '2026-06-20'
+        
+        # At first, it should be empty since no table has all slots booked
+        response = self.client.get(url, {'date': date_str})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), [])
+        
+        # Book 5 out of 6 slots
+        times = ["10:00", "12:00", "14:00", "16:00", "18:00"]
+        for t in times:
+            Reservation.objects.create(
+                name='Иван',
+                phone='+79991234567',
+                date=date_str,
+                time=datetime.time(int(t.split(':')[0]), 0),
+                guests=2,
+                table=self.table,
+                status='confirmed'
+            )
+            
+        # Still not completely busy (1 slot left)
+        response = self.client.get(url, {'date': date_str})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), [])
+        
+        # Book the last slot ("20:00")
+        Reservation.objects.create(
+            name='Иван',
+            phone='+79991234567',
+            date=date_str,
+            time=datetime.time(20, 0),
+            guests=2,
+            table=self.table,
+            status='confirmed'
+        )
+        
+        # Now it should be returned as busy
+        response = self.client.get(url, {'date': date_str})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), [self.table.id])

@@ -265,6 +265,38 @@ def api_slots(request):
         
     return JsonResponse(result, safe=False)
 
+def api_tables_status(request):
+    """Отдает список ID столов, которые полностью заняты на выбранную дату (все слоты заняты)"""
+    date_str = request.GET.get('date')
+    if not date_str:
+        return JsonResponse([], safe=False)
+    
+    # Все активные столы
+    tables = Table.objects.filter(is_active=True)
+    times = ["10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]
+    
+    # Получаем бронирования на эту дату
+    reservations = Reservation.objects.filter(
+        date=date_str,
+        status__in=['confirmed', 'pending']
+    ).values('table_id', 'time')
+    
+    # Сгруппируем по столу
+    from collections import defaultdict
+    table_bookings = defaultdict(set)
+    for res in reservations:
+        if res['time'] and res['table_id']:
+            time_str = res['time'].strftime('%H:%M')
+            table_bookings[res['table_id']].add(time_str)
+            
+    busy_table_ids = []
+    for table in tables:
+        booked_slots = table_bookings[table.id]
+        if len(booked_slots) >= len(times) and all(t in booked_slots for t in times):
+            busy_table_ids.append(table.id)
+            
+    return JsonResponse(busy_table_ids, safe=False)
+
 def init_hall_tables(request):
     """Запусти один раз: /admin/init-hall/"""
     from .models import Table
@@ -362,5 +394,9 @@ def reservation(request):
     context = {}
     if request.GET.get('table'):
         context['preselected_table'] = request.GET.get('table')
+    if request.GET.get('date'):
+        context['preselected_date'] = request.GET.get('date')
+    if request.GET.get('time'):
+        context['preselected_time'] = request.GET.get('time')
     
     return render(request, 'reservation.html', context)

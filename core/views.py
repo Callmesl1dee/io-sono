@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, JsonResponse
 from django.utils.dateparse import parse_time
 from .models import MenuItem, Category, BarItem, KidsItem, BarCategory, KidsCategory, Reservation, Table, UserProfile
+from .forms import UserRegistrationForm, ReservationForm
 
 def home(request):
     dishes = MenuItem.objects.select_related('category').filter(is_featured=True)[:6]
@@ -47,20 +48,15 @@ def kids_menu(request):
 
 def register(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        
-        # Простая проверка
-        if User.objects.filter(username=username).exists():
-            messages.error(request, 'Пользователь с таким именем уже существует')
-        else:
-            user = User.objects.create_user(username=username, email=email, password=password)
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
             login(request, user)
             messages.success(request, 'Регистрация успешна!')
             return redirect('core:profile')
-            
-    return render(request, 'auth/register.html')
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'auth/register.html', {'form': form})
 
 def login_view(request):
     if request.method == 'POST':
@@ -227,7 +223,11 @@ def admin_analytics(request):
     return render(request, 'admin/analytics.html', context)
 
 def hall_view(request):
-    return render(request, 'hall.html')
+    tables = Table.objects.filter(is_active=True)
+    for table in tables:
+        table.svg_x = table.pos_x * 10
+        table.svg_y = table.pos_y * 6
+    return render(request, 'hall.html', {'tables': tables})
 
 def api_tables(request):
     """Отдает список столов для карты"""
@@ -334,69 +334,41 @@ def init_hall_tables(request):
     return HttpResponse(f"✅ Создано {Table.objects.count()} столов. Настрой координаты в админке, если нужно.")
 
 def reservation(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        phone = request.POST.get('phone')
-        date = request.POST.get('date')
-        time_slot = request.POST.get('time')
-        guests = request.POST.get('guests', 2)
-        table_id = request.POST.get('table')
-
-        # Очищаем временной интервал для получения стартового времени (например, "10:00-12:00" -> "10:00")
-        clean_time_str = time_slot.split('-')[0].strip() if time_slot else None
-        parsed_time = parse_time(clean_time_str) if clean_time_str else None
-
-        table = None
-        if table_id:
-            try:
-                table = Table.objects.get(id=table_id)
-            except Table.DoesNotExist:
-                pass
-
-        # Валидация: проверяем, не занят ли стол на выбранные дату и время
-        if table and date and parsed_time:
-            conflict = Reservation.objects.filter(
-                table=table,
-                date=date,
-                time=parsed_time,
-                status__in=['confirmed', 'pending']
-            ).exists()
-            if conflict:
-                messages.error(
-                    request, 
-                    f'Стол №{table.number} уже забронирован на выбранное время ({clean_time_str}). Пожалуйста, выберите другое время или другой стол.'
-                )
-                context = {
-                    'preselected_table': table_id,
-                    'name': name,
-                    'phone': phone,
-                    'date': date,
-                    'time': time_slot,
-                    'guests': guests,
-                }
-                return render(request, 'reservation.html', context)
-
-        # Создаем бронирование за один запрос к БД
-        Reservation.objects.create(
-            name=name,
-            phone=phone,
-            date=date,
-            time=parsed_time if parsed_time else time_slot,
-            guests=guests,
-            table=table,
-            user=request.user if request.user.is_authenticated else None
-        )
-        
-        messages.success(request, 'Столик забронирован! Мы свяжемся с вами.')
-        return redirect('core:profile')
+    from django.core.exceptions import ValidationError
     
-    # Если есть GET-параметры (из схемы), подставляем их
-    context = {}
-    if request.GET.get('table'):
-        context['preselected_table'] = request.GET.get('table')
-    if request.GET.get('date'):
-        context['preselected_date'] = request.GET.get('date')
-    if request.GET.get('time'):
-        context['preselected_time'] = request.GET.get('time')
+    tables = Table.objects.filter(is_active=True)
+    for table in tables:
+        table.svg_x = table.pos_x * 10
+        table.svg_y = table.pos_y * 6
+
+    if request.method == 'POST':
+        form = ReservationForm(request.POST)
+        if form.is_valid():
+            res_instance = form.save(commit=False)
+            if request.user.is_authenticated:
+                res_instance.user = request.user
+            res_instance.save()
+            messages.success(request, 'Столик забронирован! Мы свяжемся с вами.')
+            return redirect('core:profile')
+        else:
+            for error in form.non_field_errors():
+                messages.error(request, error)
+    else:
+        initial = {}
+        if request.GET.get('table'):
+            initial['table'] = request.GET.get('table')
+        if request.GET.get('date'):
+            initial['date'] = request.GET.get('date')
+        if request.GET.get('time'):
+            initial['time'] = request.GET.get('time')
+        form = ReservationForm(initial=initial)
+
+    context = {
+        'form': form,
+        'tables': tables,
+        'preselected_table': request.GET.get('table') or request.POST.get('table'),
+        'preselected_date': request.GET.get('date') or request.POST.get('date'),
+        'preselected_time': request.GET.get('time') or request.POST.get('time'),
+    }
     
     return render(request, 'reservation.html', context)

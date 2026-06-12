@@ -4,43 +4,26 @@ let currentTableId = null;
 let selectedSlotTime = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Инициализируем карту столов
+    // Инициализируем карту столов (привязываем обработчики кликов)
     initHallMap();
 });
 
-async function initHallMap() {
-    const layer = document.getElementById('tables-layer');
-    if (!layer) return;
-
-    try {
-        layer.innerHTML = '<p style="color:white; text-align:center; margin-top: 30%;">Загрузка столов...</p>';
-        const res = await fetch('/api/tables/');
-        const tables = await res.json();
-        layer.innerHTML = '';
-
-        tables.forEach(table => {
-            const tableEl = document.createElement('div');
-            tableEl.className = 'table-skeleton';
-            tableEl.dataset.id = table.id;
-            tableEl.style.left = `${table.x}%`;
-            tableEl.style.top = `${table.y}%`;
-            tableEl.textContent = table.number;
-
-            tableEl.addEventListener('click', () => {
-                if (!tableEl.classList.contains('busy')) {
-                    openPopup(table.id, table.number);
-                }
-            });
-
-            layer.appendChild(tableEl);
+function initHallMap() {
+    document.querySelectorAll('.svg-table').forEach(tableEl => {
+        const tableId = parseInt(tableEl.dataset.id);
+        
+        tableEl.addEventListener('click', () => {
+            if (!tableEl.classList.contains('busy')) {
+                // Находим номер стола из текста внутри группы <g>
+                const textEl = tableEl.querySelector('text');
+                const tableNumber = textEl ? textEl.textContent : tableId.toString();
+                openPopup(tableId, tableNumber);
+            }
         });
+    });
 
-        // Загружаем статус занятости столов
-        await loadTableStatus();
-    } catch(e) {
-        console.error('Ошибка инициализации карты столов:', e);
-        layer.innerHTML = '<p style="color:red; text-align:center; margin-top: 30%;">Ошибка загрузки карты</p>';
-    }
+    // Загружаем статус занятости столов
+    loadTableStatus();
 }
 
 async function loadTableStatus() {
@@ -48,7 +31,7 @@ async function loadTableStatus() {
         const res = await fetch(`/api/tables-status/?date=${currentDate}`);
         const busyTables = await res.json();
         
-        document.querySelectorAll('.table-skeleton').forEach(tableEl => {
+        document.querySelectorAll('.svg-table').forEach(tableEl => {
             const id = parseInt(tableEl.dataset.id);
             if (busyTables.includes(id)) {
                 tableEl.classList.add('busy');

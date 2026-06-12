@@ -54,11 +54,11 @@ class Table(models.Model):
 
     @property
     def svg_x(self):
-        return self.pos_x * 10
+        return self.pos_x * 10.5
 
     @property
     def svg_y(self):
-        return self.pos_y * 6
+        return self.pos_y * 5.57
 
     @property
     def rotation(self):

@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import MenuItem, Category, BarItem, KidsItem, BarCategory, KidsCategory, Reservation
-from .models import UserProfile, Reservation  # Добавь UserProfile сюда
-from django.http import HttpResponse, JsonResponse  # Добавь HttpResponse сюда
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.models import User
+from django.http import HttpResponse, JsonResponse
+from django.utils.dateparse import parse_time
+from .models import MenuItem, Category, BarItem, KidsItem, BarCategory, KidsCategory, Reservation, Table, UserProfile
 
 def home(request):
     dishes = MenuItem.objects.select_related('category').filter(is_featured=True)[:6]
@@ -42,43 +44,6 @@ def kids_menu(request):
         'categories': categories
     })
 
-def reservation(request):
-    from .models import Reservation
-    from django.contrib import messages
-    from django.shortcuts import redirect
-    
-    if request.method == 'POST':
-        # Получаем данные из формы
-        name = request.POST.get('name')
-        phone = request.POST.get('phone')
-        date = request.POST.get('date')
-        time = request.POST.get('time')
-        guests = request.POST.get('guests', 2)
-        
-        # Создаём бронь
-        new_reservation = Reservation.objects.create(
-            name=name,
-            phone=phone,
-            date=date,
-            time=time,
-            guests=guests,
-        )
-        
-        # 🔥 ВАЖНО: Если пользователь залогинен — привязываем бронь к нему
-        if request.user.is_authenticated:
-            new_reservation.user = request.user
-            new_reservation.save()
-        
-        messages.success(request, 'Столик забронирован! Мы свяжемся с вами.')
-        return redirect('core:profile')  # Перенаправляем в профиль, чтобы сразу увидеть бронь
-    
-    return render(request, 'reservation.html')
-
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.models import User
-from django.contrib import messages
-from .models import Reservation  # Импортируем модель броней
 
 def register(request):
     if request.method == 'POST':
@@ -261,10 +226,6 @@ def admin_analytics(request):
     
     return render(request, 'admin/analytics.html', context)
 
-from django.http import JsonResponse
-from .models import Table, Reservation
-import json
-
 def hall_view(request):
     return render(request, 'hall.html')
 
@@ -283,11 +244,14 @@ def api_slots(request):
     times = ["10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]    
     # Смотрим, какие слоты уже заняты
     # Примечание: time здесь это начало слота
-    busy_slots = Reservation.objects.filter(
+    busy_slots_query = Reservation.objects.filter(
         table_id=table_id, 
         date=date, 
         status__in=['confirmed', 'pending']
     ).values_list('time', flat=True)
+    
+    # Преобразуем datetime.time в строки формата "HH:MM" для точного сравнения
+    busy_slots = [t.strftime('%H:%M') for t in busy_slots_query if t]
     
     result = []
     for t in times:
@@ -342,30 +306,54 @@ def reservation(request):
         name = request.POST.get('name')
         phone = request.POST.get('phone')
         date = request.POST.get('date')
-        time = request.POST.get('time')
+        time_slot = request.POST.get('time')
         guests = request.POST.get('guests', 2)
-        table_id = request.POST.get('table')  # Новый параметр
-        
-        new_reservation = Reservation.objects.create(
-            name=name,
-            phone=phone,
-            date=date,
-            time=time,
-            guests=guests,
-        )
-        
-        # Привязываем стол, если выбран
+        table_id = request.POST.get('table')
+
+        # Очищаем временной интервал для получения стартового времени (например, "10:00-12:00" -> "10:00")
+        clean_time_str = time_slot.split('-')[0].strip() if time_slot else None
+        parsed_time = parse_time(clean_time_str) if clean_time_str else None
+
+        table = None
         if table_id:
             try:
                 table = Table.objects.get(id=table_id)
-                new_reservation.table = table
-                new_reservation.save()
             except Table.DoesNotExist:
                 pass
-        
-        if request.user.is_authenticated:
-            new_reservation.user = request.user
-            new_reservation.save()
+
+        # Валидация: проверяем, не занят ли стол на выбранные дату и время
+        if table and date and parsed_time:
+            conflict = Reservation.objects.filter(
+                table=table,
+                date=date,
+                time=parsed_time,
+                status__in=['confirmed', 'pending']
+            ).exists()
+            if conflict:
+                messages.error(
+                    request, 
+                    f'Стол №{table.number} уже забронирован на выбранное время ({clean_time_str}). Пожалуйста, выберите другое время или другой стол.'
+                )
+                context = {
+                    'preselected_table': table_id,
+                    'name': name,
+                    'phone': phone,
+                    'date': date,
+                    'time': time_slot,
+                    'guests': guests,
+                }
+                return render(request, 'reservation.html', context)
+
+        # Создаем бронирование за один запрос к БД
+        Reservation.objects.create(
+            name=name,
+            phone=phone,
+            date=date,
+            time=parsed_time if parsed_time else time_slot,
+            guests=guests,
+            table=table,
+            user=request.user if request.user.is_authenticated else None
+        )
         
         messages.success(request, 'Столик забронирован! Мы свяжемся с вами.')
         return redirect('core:profile')

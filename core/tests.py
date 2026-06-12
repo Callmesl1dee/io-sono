@@ -1,3 +1,111 @@
+import datetime
 from django.test import TestCase
+from django.urls import reverse
+from django.contrib.messages import get_messages
+from django.contrib.auth.models import User
+from .models import Table, Reservation
 
-# Create your tests here.
+class ReservationTests(TestCase):
+    def setUp(self):
+        # Create and log in a test user
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+
+        # Create a test table
+        self.table = Table.objects.create(
+            number="1",
+            seats=4,
+            pos_x=10,
+            pos_y=15,
+            is_active=True
+        )
+        self.reservation_url = reverse('core:reservation')
+        self.slots_api_url = reverse('core:api_slots')
+
+    def test_successful_reservation(self):
+        """Test that booking an available table is successful."""
+        data = {
+            'name': 'Иван',
+            'phone': '+79991234567',
+            'date': '2026-06-20',
+            'time': '10:00-12:00',
+            'guests': 2,
+            'table': self.table.id,
+        }
+        response = self.client.post(self.reservation_url, data)
+        # Check that it redirects to profile
+        self.assertRedirects(response, reverse('core:profile'))
+        
+        # Verify the reservation was created in the database
+        self.assertEqual(Reservation.objects.count(), 1)
+        res = Reservation.objects.first()
+        self.assertEqual(res.name, 'Иван')
+        self.assertEqual(res.table, self.table)
+        self.assertEqual(res.date, datetime.date(2026, 6, 20))
+        self.assertEqual(res.time, datetime.time(10, 0))
+        self.assertEqual(res.user, self.user)
+
+    def test_double_booking_prevention(self):
+        """Test that booking the same table on the same date and time slot is prevented."""
+        # Create first reservation
+        Reservation.objects.create(
+            name='Иван',
+            phone='+79991234567',
+            date='2026-06-20',
+            time=datetime.time(10, 0),
+            guests=2,
+            table=self.table,
+            status='confirmed'
+        )
+        
+        # Try to book the same table on the same date and time
+        data = {
+            'name': 'Петр',
+            'phone': '+79997654321',
+            'date': '2026-06-20',
+            'time': '10:00-12:00',
+            'guests': 3,
+            'table': self.table.id,
+        }
+        response = self.client.post(self.reservation_url, data)
+        # It should NOT redirect, but render the reservation page again with status code 200
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'reservation.html')
+        
+        # Verify no second reservation was created
+        self.assertEqual(Reservation.objects.count(), 1)
+        
+        # Verify that an error message is present
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertIn('уже забронирован', messages[0].message)
+
+    def test_slots_api_reflects_reservation(self):
+        """Test that the slots API correctly shows slot availability."""
+        # Check slots before booking (all should be free)
+        response = self.client.get(self.slots_api_url, {'table': self.table.id, 'date': '2026-06-20'})
+        self.assertEqual(response.status_code, 200)
+        slots_data = response.json()
+        
+        # Find 10:00 slot
+        slot_10 = next(s for s in slots_data if s['time'] == '10:00-12:00')
+        self.assertFalse(slot_10['is_busy'])
+        
+        # Create a reservation for 10:00-12:00
+        Reservation.objects.create(
+            name='Иван',
+            phone='+79991234567',
+            date='2026-06-20',
+            time=datetime.time(10, 0),
+            guests=2,
+            table=self.table,
+            status='confirmed'
+        )
+        
+        # Check slots after booking (10:00 slot should be busy)
+        response = self.client.get(self.slots_api_url, {'table': self.table.id, 'date': '2026-06-20'})
+        self.assertEqual(response.status_code, 200)
+        slots_data = response.json()
+        
+        slot_10 = next(s for s in slots_data if s['time'] == '10:00-12:00')
+        self.assertTrue(slot_10['is_busy'])

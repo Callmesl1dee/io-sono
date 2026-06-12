@@ -224,9 +224,6 @@ def admin_analytics(request):
 
 def hall_view(request):
     tables = Table.objects.filter(is_active=True)
-    for table in tables:
-        table.svg_x = table.pos_x * 10
-        table.svg_y = table.pos_y * 6
     return render(request, 'hall.html', {'tables': tables})
 
 def api_tables(request):
@@ -334,12 +331,7 @@ def init_hall_tables(request):
     return HttpResponse(f"✅ Создано {Table.objects.count()} столов. Настрой координаты в админке, если нужно.")
 
 def reservation(request):
-    from django.core.exceptions import ValidationError
-    
     tables = Table.objects.filter(is_active=True)
-    for table in tables:
-        table.svg_x = table.pos_x * 10
-        table.svg_y = table.pos_y * 6
 
     if request.method == 'POST':
         form = ReservationForm(request.POST)

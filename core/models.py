@@ -52,6 +52,39 @@ class Table(models.Model):
     def __str__(self):
         return f"Стол №{self.number}"
 
+    @property
+    def svg_x(self):
+        return self.pos_x * 10
+
+    @property
+    def svg_y(self):
+        return self.pos_y * 6
+
+    @property
+    def rotation(self):
+        try:
+            num = int(self.number)
+            if (7 <= num <= 16) or (18 <= num <= 21):
+                return 45
+        except ValueError:
+            pass
+        return 0
+
+    @property
+    def shape_type(self):
+        if self.number.upper() in ['VIP 1', 'VIP 2']:
+            return 'horizontal_rect'
+        try:
+            num = int(self.number)
+            if num == 17:
+                return 'circle'
+            elif (7 <= num <= 16) or (18 <= num <= 21):
+                return 'square'
+            else:
+                return 'vertical_rect'
+        except ValueError:
+            return 'vertical_rect'
+
 # В начало файла добавь импорт
 from django.contrib.auth.models import User
 

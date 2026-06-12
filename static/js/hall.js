@@ -14,9 +14,7 @@ function initHallMap() {
         
         tableEl.addEventListener('click', () => {
             if (!tableEl.classList.contains('busy')) {
-                // Находим номер стола из текста внутри группы <g>
-                const textEl = tableEl.querySelector('text');
-                const tableNumber = textEl ? textEl.textContent : tableId.toString();
+                const tableNumber = tableEl.dataset.number || tableId.toString();
                 openPopup(tableId, tableNumber);
             }
         });

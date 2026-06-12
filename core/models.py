@@ -40,8 +40,8 @@ class MenuItem(models.Model):
 class Table(models.Model):
     number = models.CharField('Номер стола', max_length=10)
     seats = models.PositiveIntegerField('Мест', default=2)
-    pos_x = models.IntegerField('Позиция X (%)', default=0)
-    pos_y = models.IntegerField('Позиция Y (%)', default=0)
+    pos_x = models.IntegerField('Позиция X (пикс.)', default=0)
+    pos_y = models.IntegerField('Позиция Y (пикс.)', default=0)
     is_active = models.BooleanField('Активен', default=True)
 
     class Meta:
@@ -54,11 +54,11 @@ class Table(models.Model):
 
     @property
     def svg_x(self):
-        return self.pos_x * 10.5
+        return self.pos_x
 
     @property
     def svg_y(self):
-        return self.pos_y * 5.57
+        return self.pos_y
 
     @property
     def rotation(self):

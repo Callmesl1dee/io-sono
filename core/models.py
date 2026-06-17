@@ -40,8 +40,8 @@ class MenuItem(models.Model):
 class Table(models.Model):
     number = models.CharField('Номер стола', max_length=10)
     seats = models.PositiveIntegerField('Мест', default=2)
-    pos_x = models.IntegerField('Позиция X (%)', default=0)
-    pos_y = models.IntegerField('Позиция Y (%)', default=0)
+    pos_x = models.IntegerField('Позиция X (пикс.)', default=0)
+    pos_y = models.IntegerField('Позиция Y (пикс.)', default=0)
     is_active = models.BooleanField('Активен', default=True)
 
     class Meta:
@@ -51,6 +51,39 @@ class Table(models.Model):
 
     def __str__(self):
         return f"Стол №{self.number}"
+
+    @property
+    def svg_x(self):
+        return self.pos_x
+
+    @property
+    def svg_y(self):
+        return self.pos_y
+
+    @property
+    def rotation(self):
+        try:
+            num = int(self.number)
+            if (7 <= num <= 16) or (18 <= num <= 21):
+                return 45
+        except ValueError:
+            pass
+        return 0
+
+    @property
+    def shape_type(self):
+        if self.number.upper() in ['VIP 1', 'VIP 2']:
+            return 'horizontal_rect'
+        try:
+            num = int(self.number)
+            if num == 17:
+                return 'circle'
+            elif (7 <= num <= 16) or (18 <= num <= 21):
+                return 'square'
+            else:
+                return 'vertical_rect'
+        except ValueError:
+            return 'vertical_rect'
 
 # В начало файла добавь импорт
 from django.contrib.auth.models import User
@@ -85,6 +118,27 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f"{self.name} | {self.date} {self.time}"
+
+    def clean(self):
+        super().clean()
+        from django.core.exceptions import ValidationError
+        if self.table and self.date and self.time:
+            conflict = Reservation.objects.filter(
+                table=self.table,
+                date=self.date,
+                time=self.time,
+                status__in=['confirmed', 'pending']
+            )
+            if self.pk:
+                conflict = conflict.exclude(pk=self.pk)
+            if conflict.exists():
+                raise ValidationError(
+                    f'Стол №{self.table.number} уже забронирован на выбранное время.'
+                )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
     

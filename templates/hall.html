@@ -1,15 +1,35 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Схема зала | IO SONO{% endblock %}
 {% block content %}
 <section class="hall-section">
     <div class="container">
         <h1 class="page-header__title" style="text-align:center;">Выберите <span class="text-accent">стол</span></h1>
         
-        <div class="hall-map-wrapper">
-            <div class="hall-map-bg"></div>
-            <div id="tables-layer" class="tables-layer">
-                <p style="color:white; text-align:center; margin-top: 30%;">Загрузка плана...</p>
-            </div>
+        <!-- === SVG СХЕМА ЗАЛА === -->
+        <div class="hall-map-svg" style="margin-bottom: 3rem; background: #0f0f0f; border-radius: 20px; padding: 10px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 40px rgba(0,0,0,0.4);">
+            <svg viewBox="0 0 1050 557" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                <!-- Фоновая картинка зала -->
+                <image href="{% static 'images/hall-plan.png' %}" x="0" y="0" width="1050" height="557" style="opacity: 0.95;" />
+                
+                {% load l10n %}
+                {% localize off %}
+                {% for table in tables %}
+                <g class="svg-table" data-id="{{ table.id }}" data-number="{{ table.number }}" transform="translate({{ table.svg_x }}, {{ table.svg_y }}) rotate({{ table.rotation }})">
+                    {% if table.shape_type == 'circle' %}
+                        <circle cx="0" cy="0" r="28" />
+                    {% elif table.shape_type == 'square' %}
+                        <rect x="-32" y="-32" width="64" height="64" rx="8" />
+                    {% elif table.shape_type == 'horizontal_rect' %}
+                        <rect x="-55" y="-35" width="110" height="70" rx="8" />
+                    {% else %}
+                        <!-- vertical_rect -->
+                        <rect x="-35" y="-55" width="70" height="110" rx="8" />
+                    {% endif %}
+                </g>
+                {% endfor %}
+                {% endlocalize %}
+            </svg>
         </div>
     </div>
 </section>
